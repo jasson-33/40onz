@@ -74,14 +74,14 @@ bun run dev
 # Build for production:
 bun run build
 
-# Start Shopify theme dev (requires store URL + CLI auth):
-bun run theme:dev
+# Start Shopify theme dev (opens browser OAuth on first run):
+bun run theme:dev   # → yxxehz-a9.myshopify.com / dev.cuarentaonzas.com
 
 # Push theme to store:
 bun run theme:push
 
 # Shopify theme linting:
-shopify theme check
+bun run theme:check
 ```
 
 > **Note**: `bun run dev` and `bun run theme:dev` are meant to run together — Vite serves assets, Shopify CLI proxies the store preview.
@@ -91,7 +91,7 @@ shopify theme check
 - **direnv hook**: `direnv allow` must be run once per clone. If the shell doesn't activate, check that direnv is hooked into your shell (`eval "$(direnv hook zsh)"` in `.zshrc`).
 - **Node version**: machine has Node 26 (Homebrew) globally, but the nix shell pins Node 22 for Shopify CLI compatibility. Always work inside the nix shell.
 - **Shopify CLI auth**: first run of `shopify theme dev` opens a browser OAuth flow — you must approve it manually.
-- **Shopify dev store URL**: needed for `theme:dev` and `theme:push` scripts — replace `<your-store>.myshopify.com` placeholder in `package.json` when known.
+- **Shopify store URLs**: internal = `yxxehz-a9.myshopify.com`, custom domain = `dev.cuarentaonzas.com`. Both wired into `package.json` scripts.
 - **PDF rasterization**: the "ECOMM 40OZ" design PDF is not yet in the repo. When obtained, rasterize each page with `qlmanage -t -s 2560 -o design/` and commit to `design/`.
 - **Mobile breakpoints**: PDF mockups only show 1920px desktop. Mobile layouts mirror emanuelebicocchi.it responsive patterns (mobile nav drawer, single-column grid).
 

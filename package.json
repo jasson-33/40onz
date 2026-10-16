@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "theme:dev": "shopify theme dev --store <your-store>.myshopify.com",
-    "theme:push": "shopify theme push --store <your-store>.myshopify.com"
+    "theme:dev": "shopify theme dev --store yxxehz-a9.myshopify.com",
+    "theme:push": "shopify theme push --store yxxehz-a9.myshopify.com",
+    "theme:check": "shopify theme check"
   },
   "devDependencies": {
     "@shopify/cli": "^4.9.4",
