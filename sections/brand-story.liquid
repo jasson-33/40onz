@@ -1,0 +1,107 @@
+<section class="py-[var(--spacing-section,6rem)] px-6 lg:px-10 max-w-[1920px] mx-auto">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center {% if section.settings.image_position == 'right' %}lg:grid-flow-dense{% endif %}">
+
+    {%- comment -%} Image {%- endcomment -%}
+    <div class="{% if section.settings.image_position == 'right' %}lg:col-start-2{% endif %} relative aspect-[4/5] overflow-hidden bg-[#111]">
+      {%- if section.settings.image != blank -%}
+        <img
+          src="{{ section.settings.image | image_url: width: 900 }}"
+          srcset="
+            {{ section.settings.image | image_url: width: 600 }} 600w,
+            {{ section.settings.image | image_url: width: 900 }} 900w,
+            {{ section.settings.image | image_url: width: 1200 }} 1200w
+          "
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          alt="{{ section.settings.image.alt | escape | default: section.settings.heading | escape }}"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        >
+      {%- else -%}
+        <div class="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a]"></div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Text {%- endcomment -%}
+    <div class="flex flex-col gap-6 {% if section.settings.image_position == 'right' %}lg:col-start-1 lg:row-start-1{% endif %}">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="text-xs tracking-[0.3em] uppercase text-[#c9a96e]">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-tight">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.text != blank -%}
+        <div class="text-[#6b6b6b] text-base leading-relaxed max-w-lg">{{ section.settings.text }}</div>
+      {%- endif -%}
+      {%- if section.settings.button_label != blank -%}
+        <a
+          href="{{ section.settings.button_url | default: '/pages/about' }}"
+          class="self-start text-xs tracking-widest uppercase border-b border-[#c9a96e] text-[#c9a96e] pb-0.5 hover:text-[#fafafa] hover:border-[#fafafa] transition-colors duration-200"
+        >
+          {{ section.settings.button_label }}
+        </a>
+      {%- endif -%}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Brand Story",
+  "settings": [
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Our Story"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Crafted for the bold."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Body text",
+      "default": "<p>40onz is a brand built at the intersection of street culture and fine craft. Every piece is designed with intention, made to last.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Our Story"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand Story",
+      "settings": {
+        "heading": "Crafted for the bold.",
+        "button_label": "Our Story"
+      }
+    }
+  ]
+}
+{% endschema %}

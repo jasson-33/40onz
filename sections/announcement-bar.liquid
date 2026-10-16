@@ -1,0 +1,76 @@
+{%- if section.settings.show_bar -%}
+  <div
+    data-announcement-bar
+    class="relative overflow-hidden bg-[#111] border-b border-[#2a2a2a] text-center py-2.5 text-xs tracking-widest uppercase"
+    aria-label="Announcements"
+  >
+    {%- for block in section.blocks -%}
+      <div
+        data-announcement-item
+        {{ block.shopify_attributes }}
+        class="px-4"
+      >
+        {%- if block.settings.url != blank -%}
+          <a href="{{ block.settings.url }}" class="hover:text-[#c9a96e] transition-colors duration-200">
+            {{ block.settings.text }}
+          </a>
+        {%- else -%}
+          <span>{{ block.settings.text }}</span>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_bar",
+      "label": "Show announcement bar",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Announcement",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Free worldwide shipping on orders over $150"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement Bar",
+      "blocks": [
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "Free worldwide shipping on orders over $150"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "New collection — ARCHIVE DROP available now"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,144 @@
+<footer class="bg-[#0a0a0a] border-t border-[#2a2a2a] pt-16 pb-8 px-6 lg:px-10" role="contentinfo">
+  <div class="max-w-[1920px] mx-auto">
+
+    {%- comment -%} Top row: logo + nav columns {%- endcomment -%}
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10 mb-16">
+
+      {%- comment -%} Brand column {%- endcomment -%}
+      <div class="col-span-2 md:col-span-1 lg:col-span-2 flex flex-col gap-4">
+        <a href="/" aria-label="{{ shop.name }}">
+          {%- if section.settings.footer_logo != blank -%}
+            <img
+              src="{{ section.settings.footer_logo | image_url: width: 160 }}"
+              alt="{{ shop.name }}"
+              width="120"
+              height="auto"
+              loading="lazy"
+              class="h-7 w-auto object-contain"
+            >
+          {%- else -%}
+            <span class="font-display text-lg tracking-[0.2em] uppercase">{{ shop.name }}</span>
+          {%- endif -%}
+        </a>
+        {%- if section.settings.tagline != blank -%}
+          <p class="text-sm text-[#6b6b6b] max-w-xs leading-relaxed">{{ section.settings.tagline }}</p>
+        {%- endif -%}
+
+        {%- comment -%} Socials {%- endcomment -%}
+        <div class="flex gap-4 mt-2">
+          {%- if section.settings.instagram_url != blank -%}
+            <a href="{{ section.settings.instagram_url }}" aria-label="Instagram" class="text-[#6b6b6b] hover:text-[#fafafa] transition-colors duration-200" target="_blank" rel="noopener">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="2" width="20" height="20" rx="5"/>
+                <circle cx="12" cy="12" r="5"/>
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+              </svg>
+            </a>
+          {%- endif -%}
+          {%- if section.settings.tiktok_url != blank -%}
+            <a href="{{ section.settings.tiktok_url }}" aria-label="TikTok" class="text-[#6b6b6b] hover:text-[#fafafa] transition-colors duration-200" target="_blank" rel="noopener">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.77a4.85 4.85 0 01-1.01-.08z"/>
+              </svg>
+            </a>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- comment -%} Nav link columns {%- endcomment -%}
+      {%- for block in section.blocks -%}
+        <div {{ block.shopify_attributes }}>
+          <p class="text-xs tracking-widest uppercase text-[#6b6b6b] mb-4">{{ block.settings.heading }}</p>
+          {%- if linklists[block.settings.menu].links.size > 0 -%}
+            <ul class="flex flex-col gap-2">
+              {%- for link in linklists[block.settings.menu].links -%}
+                <li>
+                  <a
+                    href="{{ link.url }}"
+                    class="text-sm text-[#fafafa] hover:text-[#c9a96e] transition-colors duration-200"
+                  >
+                    {{ link.title }}
+                  </a>
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} Bottom bar {%- endcomment -%}
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4 border-t border-[#2a2a2a] pt-8 text-xs text-[#6b6b6b]">
+      <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</p>
+      {%- if section.settings.payment_text != blank -%}
+        <p>{{ section.settings.payment_text }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "footer_logo",
+      "label": "Footer logo"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Street culture meets fine craft."
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "tiktok_url",
+      "label": "TikTok URL"
+    },
+    {
+      "type": "text",
+      "id": "payment_text",
+      "label": "Payment / shipping note",
+      "default": "Secure checkout · Worldwide shipping"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_column",
+      "name": "Link Column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Column heading"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer",
+      "settings": {
+        "tagline": "Street culture meets fine craft."
+      },
+      "blocks": [
+        { "type": "link_column", "settings": { "heading": "Shop" } },
+        { "type": "link_column", "settings": { "heading": "Info" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

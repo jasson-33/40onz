@@ -1,0 +1,49 @@
+{%- comment -%}
+  Mega-menu flyout snippet.
+  Usage: {% render 'mega-menu', menu_item: linklists.main-menu.links[0] %}
+{%- endcomment -%}
+
+{%- assign menu_id = menu_item.title | handle -%}
+
+<div
+  data-mega-menu="{{ menu_id }}"
+  aria-hidden="true"
+  class="
+    absolute top-full left-0 right-0 z-30
+    bg-[#0a0a0a] border-t border-[#2a2a2a]
+    opacity-0 aria-[hidden=false]:opacity-100
+    pointer-events-none
+    transition-opacity duration-200
+    px-8 py-8
+  "
+  style="pointer-events: none;"
+>
+  <div class="max-w-[1920px] mx-auto grid grid-cols-4 gap-8">
+    {%- for child_link in menu_item.links -%}
+      <div>
+        <p class="text-xs tracking-widest uppercase text-[#6b6b6b] mb-4">{{ child_link.title }}</p>
+        {%- if child_link.links.size > 0 -%}
+          <ul class="flex flex-col gap-2">
+            {%- for grandchild in child_link.links -%}
+              <li>
+                <a
+                  href="{{ grandchild.url }}"
+                  class="text-sm text-[#fafafa] hover:text-[#c9a96e] transition-colors duration-200"
+                >
+                  {{ grandchild.title }}
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- else -%}
+          <a
+            href="{{ child_link.url }}"
+            class="text-sm text-[#fafafa] hover:text-[#c9a96e] transition-colors duration-200"
+          >
+            {{ child_link.title }}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+</div>

@@ -1,0 +1,23 @@
+{
+  "name": "40onz",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "theme:dev": "shopify theme dev --store <your-store>.myshopify.com",
+    "theme:push": "shopify theme push --store <your-store>.myshopify.com"
+  },
+  "devDependencies": {
+    "@shopify/cli": "^4.9.4",
+    "@shopify/theme": "^3.58.2",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/bun": "latest",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.4",
+    "vite-plugin-shopify": "^5.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  }
+}

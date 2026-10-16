@@ -1,0 +1,73 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "heading": "New Collection",
+        "button_label": "Shop Now",
+        "height": 90,
+        "overlay_opacity": 30,
+        "content_position": "end",
+        "content_alignment": "start"
+      }
+    },
+    "featured-collection": {
+      "type": "featured-collection",
+      "blocks": {
+        "tab-all": {
+          "type": "filter_tab",
+          "settings": { "label": "All" }
+        },
+        "tab-silver": {
+          "type": "filter_tab",
+          "settings": { "label": "Silver", "filter_tag": "silver" }
+        },
+        "tab-gold": {
+          "type": "filter_tab",
+          "settings": { "label": "Gold", "filter_tag": "gold" }
+        },
+        "tab-bronze": {
+          "type": "filter_tab",
+          "settings": { "label": "Bronze", "filter_tag": "bronze" }
+        }
+      },
+      "block_order": ["tab-all", "tab-silver", "tab-gold", "tab-bronze"],
+      "settings": {
+        "eyebrow": "Shop",
+        "title": "New Arrivals",
+        "products_to_show": 8,
+        "show_view_all": true
+      }
+    },
+    "editorial-carousel": {
+      "type": "editorial-carousel",
+      "blocks": {
+        "slide-1": { "type": "slide", "settings": {} },
+        "slide-2": { "type": "slide", "settings": {} },
+        "slide-3": { "type": "slide", "settings": {} }
+      },
+      "block_order": ["slide-1", "slide-2", "slide-3"],
+      "settings": {
+        "eyebrow": "Lookbook",
+        "title": "The Campaign"
+      }
+    },
+    "brand-story": {
+      "type": "brand-story",
+      "settings": {
+        "eyebrow": "Our Story",
+        "heading": "Crafted for the bold.",
+        "button_label": "Our Story"
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "eyebrow": "Stay in the loop",
+        "heading": "Get 10% off your first order",
+        "subheading": "Subscribe for early access to drops, exclusive offers and editorials."
+      }
+    }
+  },
+  "order": ["hero", "featured-collection", "editorial-carousel", "brand-story", "newsletter"]
+}

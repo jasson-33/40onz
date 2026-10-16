@@ -1,0 +1,116 @@
+{%- comment -%}
+  Product card snippet.
+  Expects: product (product object), show_vendor (bool), lazy (bool)
+{%- endcomment -%}
+
+{%- liquid
+  assign featured_image = product.featured_media
+  assign hover_image = product.media[1]
+  assign loading = lazy | default: true | ternary: 'lazy', 'eager'
+-%}
+
+<article
+  data-product-card
+  class="group relative flex flex-col"
+  aria-label="{{ product.title | escape }}"
+>
+  {%- comment -%} Image container {%- endcomment -%}
+  <a
+    href="{{ product.url }}"
+    class="relative block overflow-hidden bg-[#111] aspect-[3/4]"
+    tabindex="-1"
+    aria-hidden="true"
+  >
+    {%- if featured_image -%}
+      <img
+        data-img-primary
+        src="{{ featured_image | image_url: width: 600 }}"
+        srcset="
+          {{ featured_image | image_url: width: 400 }} 400w,
+          {{ featured_image | image_url: width: 600 }} 600w,
+          {{ featured_image | image_url: width: 800 }} 800w
+        "
+        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+        alt="{{ featured_image.alt | escape | default: product.title | escape }}"
+        width="{{ featured_image.preview_image.width }}"
+        height="{{ featured_image.preview_image.height }}"
+        loading="{{ loading }}"
+        class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+      >
+    {%- endif -%}
+
+    {%- if hover_image -%}
+      <img
+        data-img-hover
+        src="{{ hover_image | image_url: width: 600 }}"
+        srcset="
+          {{ hover_image | image_url: width: 400 }} 400w,
+          {{ hover_image | image_url: width: 600 }} 600w,
+          {{ hover_image | image_url: width: 800 }} 800w
+        "
+        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+        alt="{{ hover_image.alt | escape | default: product.title | escape }}"
+        width="{{ hover_image.preview_image.width }}"
+        height="{{ hover_image.preview_image.height }}"
+        loading="lazy"
+        class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300"
+      >
+    {%- endif -%}
+
+    {%- comment -%} Quick-add button {%- endcomment -%}
+    {%- if product.available -%}
+      <div class="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+        {%- if product.variants.size == 1 -%}
+          <form action="/cart/add" method="post" data-add-to-cart>
+            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+            <input type="hidden" name="quantity" value="1">
+            <button
+              type="submit"
+              class="w-full py-3 bg-[#c9a96e] text-[#0a0a0a] text-xs tracking-widest uppercase font-medium hover:bg-[#e0c99a] transition-colors duration-200"
+            >
+              Quick Add
+            </button>
+          </form>
+        {%- else -%}
+          <a
+            href="{{ product.url }}"
+            class="block w-full py-3 bg-[#c9a96e] text-[#0a0a0a] text-xs tracking-widest uppercase font-medium text-center hover:bg-[#e0c99a] transition-colors duration-200"
+          >
+            Select Options
+          </a>
+        {%- endif -%}
+      </div>
+    {%- else -%}
+      <div class="absolute bottom-0 left-0 right-0">
+        <span class="block w-full py-3 bg-[#2a2a2a] text-[#6b6b6b] text-xs tracking-widest uppercase text-center">
+          Sold Out
+        </span>
+      </div>
+    {%- endif -%}
+  </a>
+
+  {%- comment -%} Card info {%- endcomment -%}
+  <div class="pt-3 flex flex-col gap-1">
+    {%- if show_vendor and product.vendor -%}
+      <p class="text-xs text-[#6b6b6b] tracking-widest uppercase">{{ product.vendor }}</p>
+    {%- endif -%}
+
+    <h3 class="text-sm font-medium leading-snug">
+      <a href="{{ product.url }}" class="hover:text-[#c9a96e] transition-colors duration-200">
+        {{ product.title }}
+      </a>
+    </h3>
+
+    <p class="text-sm text-[#6b6b6b]">
+      {%- if product.price_varies -%}
+        <span>From </span>
+      {%- endif -%}
+      <span class="{% if product.compare_at_price > product.price %}text-red-400{% endif %}">
+        {{ product.price | money }}
+      </span>
+      {%- if product.compare_at_price > product.price -%}
+        <s class="text-[#6b6b6b] ml-1">{{ product.compare_at_price | money }}</s>
+      {%- endif -%}
+    </p>
+  </div>
+</article>

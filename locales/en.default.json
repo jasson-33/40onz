@@ -1,0 +1,44 @@
+{
+  "general": {
+    "password_page": {
+      "title": "Coming Soon",
+      "login_form_heading": "Enter store using password",
+      "login_form_password_label": "Password",
+      "login_form_password_placeholder": "Your password",
+      "login_form_submit": "Enter",
+      "signup_form_email_label": "Email",
+      "signup_form_success": "We'll send you an email when the store is launched!",
+      "admin_link_html": "Are you the store owner? <a href=\"/admin\" target=\"_blank\">Log in here</a>"
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to Cart",
+      "sold_out": "Sold Out",
+      "unavailable": "Unavailable",
+      "on_sale": "Sale",
+      "quantity": {
+        "label": "Quantity",
+        "increase": "Increase quantity for",
+        "decrease": "Decrease quantity for"
+      }
+    }
+  },
+  "cart": {
+    "general": {
+      "title": "Cart",
+      "empty": "Your cart is empty.",
+      "continue_shopping": "Continue Shopping",
+      "subtotal": "Subtotal",
+      "checkout": "Checkout",
+      "taxes_and_shipping_at_checkout": "Taxes and shipping calculated at checkout"
+    }
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "close": "Close",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu",
+    "search": "Search"
+  }
+}

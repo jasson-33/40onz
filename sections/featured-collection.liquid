@@ -1,0 +1,152 @@
+{%- liquid
+  assign collection = collections[section.settings.collection]
+  assign products = collection.products | default: empty
+  assign product_limit = section.settings.products_to_show | default: 8
+-%}
+
+<section class="py-[var(--spacing-section,6rem)] px-6 lg:px-10 max-w-[1920px] mx-auto">
+
+  {%- comment -%} Section header {%- endcomment -%}
+  <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+    <div>
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="text-xs tracking-[0.3em] uppercase text-[#c9a96e] mb-2">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.title != blank -%}
+        <h2 class="font-display text-4xl md:text-5xl font-light">{{ section.settings.title }}</h2>
+      {%- endif -%}
+    </div>
+    {%- if collection.url and section.settings.show_view_all -%}
+      <a
+        href="{{ collection.url }}"
+        class="text-xs tracking-widest uppercase text-[#6b6b6b] hover:text-[#c9a96e] border-b border-[#2a2a2a] hover:border-[#c9a96e] pb-0.5 transition-colors duration-200 shrink-0"
+      >
+        View All
+      </a>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Tab filter {%- endcomment -%}
+  {%- if section.blocks.size > 0 -%}
+    <div data-tab-group class="mb-8">
+      <div class="flex gap-6 border-b border-[#2a2a2a] overflow-x-auto">
+        {%- for block in section.blocks -%}
+          <button
+            data-tab="{{ block.settings.filter_tag | handle | default: 'all' }}"
+            aria-selected="false"
+            class="text-xs tracking-widest uppercase pb-3 border-b-2 border-transparent aria-selected:border-[#c9a96e] aria-selected:text-[#c9a96e] text-[#6b6b6b] hover:text-[#fafafa] transition-colors duration-200 whitespace-nowrap -mb-px"
+            {{ block.shopify_attributes }}
+          >
+            {{ block.settings.label }}
+          </button>
+        {%- endfor -%}
+      </div>
+
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign tab_id = block.settings.filter_tag | handle | default: 'all'
+          if block.settings.filter_tag != blank and block.settings.filter_tag != 'all'
+            assign tab_products = collection.products | where: 'tags', block.settings.filter_tag
+          else
+            assign tab_products = collection.products
+          endif
+        -%}
+        <div
+          data-tab-panel="{{ tab_id }}"
+          aria-hidden="true"
+          class="pt-8"
+        >
+          <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+            {%- for product in tab_products limit: product_limit -%}
+              <li>{% render 'product-card', product: product, lazy: forloop.index > 2 %}</li>
+            {%- else -%}
+              <li class="col-span-full text-center text-[#6b6b6b] py-16">No products found.</li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- else -%}
+    {%- comment -%} No tabs — plain grid {%- endcomment -%}
+    <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+      {%- for product in products limit: product_limit -%}
+        <li>{% render 'product-card', product: product, lazy: forloop.index > 2 %}</li>
+      {%- else -%}
+        <li class="col-span-full text-center text-[#6b6b6b] py-16">No products found.</li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Featured Collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Shop"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "New Arrivals"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 24,
+      "step": 4,
+      "label": "Products to show",
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View All' link",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "filter_tab",
+      "name": "Filter Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "All"
+        },
+        {
+          "type": "text",
+          "id": "filter_tag",
+          "label": "Tag to filter by (leave blank for all)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collection",
+      "settings": {
+        "title": "New Arrivals"
+      },
+      "blocks": [
+        { "type": "filter_tab", "settings": { "label": "All" } },
+        { "type": "filter_tab", "settings": { "label": "Silver", "filter_tag": "silver" } },
+        { "type": "filter_tab", "settings": { "label": "Gold", "filter_tag": "gold" } },
+        { "type": "filter_tab", "settings": { "label": "Bronze", "filter_tag": "bronze" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

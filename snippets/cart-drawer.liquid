@@ -1,0 +1,105 @@
+{%- comment -%} Slide-in cart drawer {%- endcomment -%}
+
+<div
+  data-cart-drawer
+  aria-hidden="true"
+  aria-label="Shopping cart"
+  role="dialog"
+  class="
+    fixed top-0 right-0 z-50 h-full w-full max-w-md
+    bg-[#111] border-l border-[#2a2a2a]
+    translate-x-full aria-[hidden=false]:translate-x-0
+    transition-transform duration-350 ease-[cubic-bezier(0.4,0,0.2,1)]
+    flex flex-col
+  "
+>
+  {%- comment -%} Header {%- endcomment -%}
+  <div class="flex items-center justify-between px-6 py-5 border-b border-[#2a2a2a]">
+    <h2 class="text-sm tracking-widest uppercase">Cart ({{ cart.item_count }})</h2>
+    <button
+      data-cart-close
+      aria-label="Close cart"
+      class="w-8 h-8 flex items-center justify-center text-[#6b6b6b] hover:text-[#fafafa] transition-colors duration-200"
+    >
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M4 4l12 12M16 4L4 16"/>
+      </svg>
+    </button>
+  </div>
+
+  {%- comment -%} Inner — refreshed via AJAX {%- endcomment -%}
+  <div data-cart-drawer-inner class="flex-1 overflow-y-auto px-6 py-6">
+    {%- if cart.item_count == 0 -%}
+      <div class="flex flex-col items-center justify-center h-full gap-4 text-center">
+        <p class="text-[#6b6b6b] text-sm">Your cart is empty.</p>
+        <a
+          href="/collections/all"
+          data-cart-close
+          class="text-xs tracking-widest uppercase border border-[#c9a96e] text-[#c9a96e] px-6 py-3 hover:bg-[#c9a96e] hover:text-[#0a0a0a] transition-colors duration-200"
+        >
+          Shop Now
+        </a>
+      </div>
+    {%- else -%}
+      <ul class="flex flex-col gap-6">
+        {%- for item in cart.items -%}
+          <li class="flex gap-4">
+            <a href="{{ item.url }}" class="shrink-0">
+              <img
+                src="{{ item.image | image_url: width: 120 }}"
+                alt="{{ item.image.alt | escape | default: item.title | escape }}"
+                width="80"
+                height="100"
+                loading="lazy"
+                class="w-20 h-24 object-cover bg-[#1a1a1a]"
+              >
+            </a>
+            <div class="flex flex-col gap-1 flex-1 min-w-0">
+              <p class="text-xs text-[#6b6b6b] tracking-widest uppercase truncate">{{ item.vendor }}</p>
+              <a href="{{ item.url }}" class="text-sm leading-snug hover:text-[#c9a96e] transition-colors duration-200">
+                {{ item.title }}
+              </a>
+              {%- unless item.variant.title == 'Default Title' -%}
+                <p class="text-xs text-[#6b6b6b]">{{ item.variant.title }}</p>
+              {%- endunless -%}
+              <div class="flex items-center justify-between mt-auto pt-2">
+                <p class="text-sm">{{ item.final_line_price | money }}</p>
+                <a
+                  href="/cart/change?id={{ item.key }}&quantity=0"
+                  class="text-xs text-[#6b6b6b] hover:text-red-400 transition-colors duration-200 tracking-wide"
+                  aria-label="Remove {{ item.title | escape }}"
+                >
+                  Remove
+                </a>
+              </div>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Footer {%- endcomment -%}
+  {%- if cart.item_count > 0 -%}
+    <div class="px-6 py-6 border-t border-[#2a2a2a] flex flex-col gap-4">
+      <div class="flex justify-between text-sm">
+        <span class="text-[#6b6b6b]">Subtotal</span>
+        <span>{{ cart.total_price | money }}</span>
+      </div>
+      <p class="text-xs text-[#6b6b6b]">Taxes and shipping calculated at checkout.</p>
+      <a
+        href="/checkout"
+        class="block w-full py-4 bg-[#c9a96e] text-[#0a0a0a] text-xs tracking-widest uppercase font-medium text-center hover:bg-[#e0c99a] transition-colors duration-200"
+      >
+        Checkout
+      </a>
+      <a
+        href="/cart"
+        data-cart-close
+        class="block w-full py-3 border border-[#2a2a2a] text-xs tracking-widest uppercase text-center hover:border-[#fafafa] transition-colors duration-200"
+      >
+        View Cart
+      </a>
+    </div>
+  {%- endif -%}
+</div>
