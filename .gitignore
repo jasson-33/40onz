@@ -4,6 +4,9 @@ node_modules
 # nix / direnv
 .direnv/
 
+# Vite internal manifest (not a valid Shopify asset)
+assets/.vite/
+
 # output
 out
 dist

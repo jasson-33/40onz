@@ -1,0 +1,6 @@
+# Vite internal build artifacts — not valid Shopify theme files
+assets/.vite/
+
+# Node / dev tooling
+node_modules/
+.direnv/
