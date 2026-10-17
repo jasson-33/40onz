@@ -4,8 +4,8 @@
       "type": "hero",
       "settings": {
         "video": "https://youtu.be/mtTXYItM9ns",
-        "heading": "New Collection",
-        "button_label": "Shop Now",
+        "heading": "",
+        "button_label": "",
         "height": 100,
         "overlay_opacity": 25,
         "content_position": "end",
