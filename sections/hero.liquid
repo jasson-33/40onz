@@ -1,5 +1,4 @@
 {%- liquid
-  assign hero_image = section.settings.image
   assign hero_height = section.settings.height | default: 100
   assign placeholder_url = 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=2000&q=80&auto=format&fit=crop'
 -%}
@@ -9,26 +8,38 @@
   style="height: {{ hero_height }}vh; min-height: 600px;"
   aria-label="{{ section.settings.heading | escape }}"
 >
-  {%- comment -%} Background image {%- endcomment -%}
-  {%- if hero_image != blank -%}
+  {%- comment -%} Background media — video first, then image, then placeholder {%- endcomment -%}
+  {%- if section.settings.video != blank -%}
+    <video
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      poster="{{ section.settings.image | image_url: width: 2000 }}"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+      aria-hidden="true"
+    >
+      <source src="{{ section.settings.video }}" type="video/mp4">
+    </video>
+  {%- elsif section.settings.image != blank -%}
     <img
-      src="{{ hero_image | image_url: width: 2000 }}"
+      src="{{ section.settings.image | image_url: width: 2000 }}"
       srcset="
-        {{ hero_image | image_url: width: 800 }} 800w,
-        {{ hero_image | image_url: width: 1200 }} 1200w,
-        {{ hero_image | image_url: width: 1600 }} 1600w,
-        {{ hero_image | image_url: width: 2000 }} 2000w
+        {{ section.settings.image | image_url: width: 800 }} 800w,
+        {{ section.settings.image | image_url: width: 1200 }} 1200w,
+        {{ section.settings.image | image_url: width: 1600 }} 1600w,
+        {{ section.settings.image | image_url: width: 2000 }} 2000w
       "
       sizes="100vw"
       width="2000"
       height="1125"
-      alt="{{ hero_image.alt | escape | default: section.settings.heading | escape }}"
+      alt="{{ section.settings.image.alt | escape | default: section.settings.heading | escape }}"
       loading="eager"
       fetchpriority="high"
       class="absolute inset-0 w-full h-full object-cover object-center"
     >
   {%- else -%}
-    {%- comment -%} Hardcoded placeholder — replace via Theme Editor once store has assets {%- endcomment -%}
     <img
       src="{{ placeholder_url }}"
       alt="Hero placeholder"
@@ -90,9 +101,15 @@
   "name": "Hero",
   "settings": [
     {
+      "type": "video_url",
+      "id": "video",
+      "label": "Video URL",
+      "info": "MP4 video URL (CDN). Takes priority over image."
+    },
+    {
       "type": "image_picker",
       "id": "image",
-      "label": "Hero image"
+      "label": "Hero image (fallback / poster)"
     },
     {
       "type": "range",
