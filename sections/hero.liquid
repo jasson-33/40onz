@@ -10,18 +10,43 @@
 >
   {%- comment -%} Background media — video first, then image, then placeholder {%- endcomment -%}
   {%- if section.settings.video != blank -%}
-    <video
-      autoplay
-      muted
-      loop
-      playsinline
-      preload="metadata"
-      poster="{{ section.settings.image | image_url: width: 2000 }}"
-      class="absolute inset-0 w-full h-full object-cover object-center"
-      aria-hidden="true"
-    >
-      <source src="{{ section.settings.video }}" type="video/mp4">
-    </video>
+    {%- assign video_url = section.settings.video -%}
+    {%- if video_url contains 'youtube.com' or video_url contains 'youtu.be' -%}
+      {%- comment -%} Extract YouTube video ID {%- endcomment -%}
+      {%- liquid
+        if video_url contains 'youtu.be/'
+          assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first
+        elsif video_url contains 'youtube.com/watch?v='
+          assign yt_id = video_url | split: 'v=' | last | split: '&' | first
+        elsif video_url contains 'youtube.com/shorts/'
+          assign yt_id = video_url | split: 'shorts/' | last | split: '?' | first
+        endif
+      -%}
+      <iframe
+        src="https://www.youtube.com/embed/{{ yt_id }}?autoplay=1&mute=1&loop=1&playlist={{ yt_id }}&controls=0&modestbranding=1&playsinline=1&rel=0&fs=0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen
+        frameborder="0"
+        aria-hidden="true"
+        tabindex="-1"
+        class="absolute inset-0 w-full h-full object-cover"
+        style="width: 100%; height: 100%;"
+      ></iframe>
+    {%- elsif video_url contains 'vimeo.com' -%}
+      {%- liquid
+        assign vimeo_id = video_url | split: 'vimeo.com/' | last | split: '?' | first | split: '/' | first
+      -%}
+      <iframe
+        src="https://player.vimeo.com/video/{{ vimeo_id }}?autoplay=1&muted=1&loop=1&background=1&autopause=0&controls=0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen
+        frameborder="0"
+        aria-hidden="true"
+        tabindex="-1"
+        class="absolute inset-0 w-full h-full object-cover"
+        style="width: 100%; height: 100%;"
+      ></iframe>
+    {%- endif -%}
   {%- elsif section.settings.image != blank -%}
     <img
       src="{{ section.settings.image | image_url: width: 2000 }}"
@@ -104,7 +129,8 @@
       "type": "video_url",
       "id": "video",
       "label": "Video URL",
-      "info": "MP4 video URL (CDN). Takes priority over image."
+      "accept": ["youtube", "vimeo"],
+      "info": "YouTube or Vimeo video URL. Takes priority over image."
     },
     {
       "type": "image_picker",
