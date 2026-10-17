@@ -5,14 +5,14 @@
     <div class="text-center py-20 flex flex-col gap-6 items-center">
       <p class="text-[#6b6b6b]">Your cart is empty.</p>
       <a
-        href="/collections/all"
+        href="{{ routes.all_products_collection_url }}"
         class="text-xs tracking-widest uppercase border border-[#c9a96e] text-[#c9a96e] px-8 py-4 hover:bg-[#c9a96e] hover:text-[#0a0a0a] transition-colors duration-200"
       >
         Continue Shopping
       </a>
     </div>
   {%- else -%}
-    <form action="/cart" method="post">
+    <form action="{{ routes.cart_url }}" method="post">
       <ul class="flex flex-col divide-y divide-[#2a2a2a] mb-10">
         {%- for item in cart.items -%}
           <li class="py-6 flex gap-6">
@@ -33,7 +33,7 @@
               <div class="flex items-center justify-between mt-auto">
                 <p class="text-sm">{{ item.final_line_price | money }}</p>
                 <a
-                  href="/cart/change?id={{ item.key }}&quantity=0"
+                  href="{{ routes.cart_change_url }}?id={{ item.key }}&quantity=0"
                   class="text-xs text-[#6b6b6b] hover:text-red-400 transition-colors duration-200"
                 >
                   Remove

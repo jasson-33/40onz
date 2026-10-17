@@ -53,6 +53,8 @@
                   {{ block.settings.image | image_url: width: 1000 }} 1000w
                 "
                 sizes="(max-width: 1024px) 100vw, 50vw"
+                width="1000"
+                height="1333"
                 alt="{{ block.settings.image.alt | escape | default: block.settings.caption | escape }}"
                 loading="lazy"
                 class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"

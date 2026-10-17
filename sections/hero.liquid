@@ -14,6 +14,8 @@
         {{ section.settings.image | image_url: width: 2000 }} 2000w
       "
       sizes="100vw"
+      width="2000"
+      height="1125"
       alt="{{ section.settings.image.alt | escape | default: section.settings.heading | escape }}"
       loading="eager"
       fetchpriority="high"

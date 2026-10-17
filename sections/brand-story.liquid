@@ -12,6 +12,8 @@
             {{ section.settings.image | image_url: width: 1200 }} 1200w
           "
           sizes="(max-width: 1024px) 100vw, 50vw"
+          width="1200"
+          height="1500"
           alt="{{ section.settings.image.alt | escape | default: section.settings.heading | escape }}"
           loading="lazy"
           class="absolute inset-0 w-full h-full object-cover"

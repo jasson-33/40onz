@@ -33,7 +33,7 @@
       <div class="flex flex-col items-center justify-center h-full gap-4 text-center">
         <p class="text-[#6b6b6b] text-sm">Your cart is empty.</p>
         <a
-          href="/collections/all"
+          href="{{ routes.all_products_collection_url }}"
           data-cart-close
           class="text-xs tracking-widest uppercase border border-[#c9a96e] text-[#c9a96e] px-6 py-3 hover:bg-[#c9a96e] hover:text-[#0a0a0a] transition-colors duration-200"
         >
@@ -65,7 +65,7 @@
               <div class="flex items-center justify-between mt-auto pt-2">
                 <p class="text-sm">{{ item.final_line_price | money }}</p>
                 <a
-                  href="/cart/change?id={{ item.key }}&quantity=0"
+                  href="{{ routes.cart_change_url }}?id={{ item.key }}&quantity=0"
                   class="text-xs text-[#6b6b6b] hover:text-red-400 transition-colors duration-200 tracking-wide"
                   aria-label="Remove {{ item.title | escape }}"
                 >
@@ -94,7 +94,7 @@
         Checkout
       </a>
       <a
-        href="/cart"
+        href="{{ routes.cart_url }}"
         data-cart-close
         class="block w-full py-3 border border-[#2a2a2a] text-xs tracking-widest uppercase text-center hover:border-[#fafafa] transition-colors duration-200"
       >

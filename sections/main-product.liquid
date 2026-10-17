@@ -26,6 +26,8 @@
               <img
                 src="{{ media | image_url: width: 200 }}"
                 alt="{{ media.alt | escape }}"
+                width="200"
+                height="267"
                 loading="lazy"
                 class="w-full h-full object-cover"
               >
@@ -76,7 +78,7 @@
       {%- endunless -%}
 
       {%- comment -%} Add to cart {%- endcomment -%}
-      <form action="/cart/add" method="post" data-add-to-cart>
+      <form action="{{ routes.cart_add_url }}" method="post" data-add-to-cart>
         <input type="hidden" name="id" value="{{ current_variant.id }}">
         <input type="hidden" name="quantity" value="1">
         <button

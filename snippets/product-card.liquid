@@ -6,7 +6,10 @@
 {%- liquid
   assign featured_image = product.featured_media
   assign hover_image = product.media[1]
-  assign loading = lazy | default: true | ternary: 'lazy', 'eager'
+  assign loading = 'lazy'
+  if lazy == false
+    assign loading = 'eager'
+  endif
 -%}
 
 <article
@@ -61,7 +64,7 @@
     {%- if product.available -%}
       <div class="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
         {%- if product.variants.size == 1 -%}
-          <form action="/cart/add" method="post" data-add-to-cart>
+          <form action="{{ routes.cart_add_url }}" method="post" data-add-to-cart>
             <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
             <input type="hidden" name="quantity" value="1">
             <button
