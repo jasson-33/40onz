@@ -3,6 +3,7 @@
     "hero": {
       "type": "hero",
       "settings": {
+        "video": "https://youtu.be/mtTXYItM9ns",
         "heading": "New Collection",
         "button_label": "Shop Now",
         "height": 100,
