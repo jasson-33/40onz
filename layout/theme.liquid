@@ -48,14 +48,14 @@
     Skip to content
   </a>
 
-  {%- sections 'announcement-bar' -%}
-  {%- sections 'header' -%}
+  {%- section 'announcement-bar' -%}
+  {%- section 'header' -%}
 
   <main id="main-content" tabindex="-1">
     {{ content_for_layout }}
   </main>
 
-  {%- sections 'footer' -%}
+  {%- section 'footer' -%}
 
   {%- comment -%} Cart drawer (rendered globally) {%- endcomment -%}
   {% render 'cart-drawer' %}

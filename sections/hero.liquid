@@ -1,61 +1,82 @@
+{%- liquid
+  assign hero_image = section.settings.image
+  assign hero_height = section.settings.height | default: 100
+  assign placeholder_url = 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=2000&q=80&auto=format&fit=crop'
+-%}
+
 <section
   class="relative w-full overflow-hidden"
-  style="height: {{ section.settings.height }}vh; min-height: 500px;"
+  style="height: {{ hero_height }}vh; min-height: 600px;"
   aria-label="{{ section.settings.heading | escape }}"
 >
   {%- comment -%} Background image {%- endcomment -%}
-  {%- if section.settings.image != blank -%}
+  {%- if hero_image != blank -%}
     <img
-      src="{{ section.settings.image | image_url: width: 2000 }}"
+      src="{{ hero_image | image_url: width: 2000 }}"
       srcset="
-        {{ section.settings.image | image_url: width: 800 }} 800w,
-        {{ section.settings.image | image_url: width: 1200 }} 1200w,
-        {{ section.settings.image | image_url: width: 1600 }} 1600w,
-        {{ section.settings.image | image_url: width: 2000 }} 2000w
+        {{ hero_image | image_url: width: 800 }} 800w,
+        {{ hero_image | image_url: width: 1200 }} 1200w,
+        {{ hero_image | image_url: width: 1600 }} 1600w,
+        {{ hero_image | image_url: width: 2000 }} 2000w
       "
       sizes="100vw"
       width="2000"
       height="1125"
-      alt="{{ section.settings.image.alt | escape | default: section.settings.heading | escape }}"
+      alt="{{ hero_image.alt | escape | default: section.settings.heading | escape }}"
       loading="eager"
       fetchpriority="high"
       class="absolute inset-0 w-full h-full object-cover object-center"
     >
   {%- else -%}
-    <div class="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a]"></div>
+    {%- comment -%} Hardcoded placeholder — replace via Theme Editor once store has assets {%- endcomment -%}
+    <img
+      src="{{ placeholder_url }}"
+      alt="Hero placeholder"
+      width="2000"
+      height="1125"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    >
   {%- endif -%}
 
   {%- comment -%} Overlay {%- endcomment -%}
   <div
     class="absolute inset-0"
-    style="background: {{ section.settings.overlay_color }}; opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"
+    style="background: {{ section.settings.overlay_color | default: '#000000' }}; opacity: {{ section.settings.overlay_opacity | default: 25 | divided_by: 100.0 }};"
   ></div>
 
   {%- comment -%} Content {%- endcomment -%}
-  <div class="relative z-10 h-full flex flex-col justify-{{ section.settings.content_position }} items-{{ section.settings.content_alignment }} px-6 lg:px-20 pb-16 pt-8">
-    <div class="max-w-3xl {% if section.settings.content_alignment == 'center' %}text-center{% elsif section.settings.content_alignment == 'end' %}text-right{% endif %}">
+  <div class="
+    relative z-10 h-full
+    flex flex-col
+    justify-{{ section.settings.content_position | default: 'end' }}
+    items-{{ section.settings.content_alignment | default: 'start' }}
+    px-8 lg:px-16 pb-20 pt-32
+  ">
+    <div class="max-w-3xl {% if section.settings.content_alignment == 'center' %}text-center mx-auto{% elsif section.settings.content_alignment == 'end' %}text-right{% endif %}">
       {%- if section.settings.eyebrow != blank -%}
-        <p class="text-xs tracking-[0.3em] uppercase text-[#c9a96e] mb-4">
+        <p class="text-[11px] tracking-[0.3em] uppercase text-[#c9a96e] mb-4">
           {{ section.settings.eyebrow }}
         </p>
       {%- endif -%}
 
       {%- if section.settings.heading != blank -%}
-        <h1 class="font-display text-5xl md:text-7xl lg:text-8xl font-light leading-[1.05] mb-6 text-[#fafafa]">
+        <h1 class="font-display text-6xl md:text-8xl lg:text-9xl font-light leading-[1] mb-8 text-white">
           {{ section.settings.heading }}
         </h1>
       {%- endif -%}
 
       {%- if section.settings.subheading != blank -%}
-        <p class="text-base md:text-lg text-[#fafafa]/80 mb-8 max-w-lg {% if section.settings.content_alignment == 'center' %}mx-auto{% endif %}">
+        <p class="text-base md:text-lg text-white/75 mb-10 max-w-lg">
           {{ section.settings.subheading }}
         </p>
       {%- endif -%}
 
       {%- if section.settings.button_label != blank -%}
         <a
-          href="{{ section.settings.button_url | default: '/collections/all' }}"
-          class="inline-block border border-[#fafafa] text-[#fafafa] text-xs tracking-widest uppercase px-8 py-4 hover:bg-[#fafafa] hover:text-[#0a0a0a] transition-colors duration-300"
+          href="{{ section.settings.button_url | default: routes.all_products_collection_url }}"
+          class="inline-block border border-white/70 text-white text-[11px] tracking-[0.2em] uppercase px-10 py-4 hover:bg-white hover:text-[#0a0a0a] transition-colors duration-300"
         >
           {{ section.settings.button_label }}
         </a>
@@ -81,7 +102,7 @@
       "step": 5,
       "unit": "vh",
       "label": "Height",
-      "default": 90
+      "default": 100
     },
     {
       "type": "color",
@@ -97,7 +118,7 @@
       "step": 5,
       "unit": "%",
       "label": "Overlay opacity",
-      "default": 30
+      "default": 25
     },
     {
       "type": "select",
@@ -154,7 +175,9 @@
       "name": "Hero",
       "settings": {
         "heading": "New Collection",
-        "button_label": "Shop Now"
+        "button_label": "Shop Now",
+        "height": 100,
+        "overlay_opacity": 25
       }
     }
   ]

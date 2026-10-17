@@ -5,8 +5,8 @@
       "settings": {
         "heading": "New Collection",
         "button_label": "Shop Now",
-        "height": 90,
-        "overlay_opacity": 30,
+        "height": 100,
+        "overlay_opacity": 25,
         "content_position": "end",
         "content_alignment": "start"
       }
