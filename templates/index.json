@@ -3,7 +3,7 @@
     "hero": {
       "type": "hero",
       "settings": {
-        "video": "https://youtu.be/mtTXYItM9ns",
+        "video": "https://youtu.be/pZ8HAi-bcRE",
         "heading": "",
         "button_label": "",
         "height": 100,
@@ -34,41 +34,59 @@
       },
       "block_order": ["tab-all", "tab-silver", "tab-gold", "tab-bronze"],
       "settings": {
-        "eyebrow": "Shop",
-        "title": "New Arrivals",
-        "products_to_show": 8,
-        "show_view_all": true
+        "eyebrow": "",
+        "title": "From the latest chapter",
+        "products_to_show": 16,
+        "show_view_all": false
       }
     },
     "editorial-carousel": {
       "type": "editorial-carousel",
       "blocks": {
-        "slide-1": { "type": "slide", "settings": {} },
-        "slide-2": { "type": "slide", "settings": {} },
-        "slide-3": { "type": "slide", "settings": {} }
+        "tile-1": { "type": "slide", "settings": { "video": "https://youtu.be/pZ8HAi-bcRE", "caption": "Necklaces", "url": "/collections/all" } },
+        "tile-2": { "type": "slide", "settings": { "image_url": "https://images.unsplash.com/photo-1600003014755-ba31aa59c4b6?w=1600&h=2000&fit=crop&q=80&auto=format", "caption": "Bracelets", "url": "/collections/all" } },
+        "tile-3": { "type": "slide", "settings": { "image_url": "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=900&h=2500&fit=crop&q=80&auto=format", "caption": "Rings", "url": "/collections/all" } },
+        "tile-4": { "type": "slide", "settings": { "video": "https://youtu.be/pZ8HAi-bcRE", "caption": "Earrings", "url": "/collections/all" } },
+        "tile-5": { "type": "slide", "settings": { "image_url": "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=900&h=2500&fit=crop&q=80&auto=format", "caption": "Fine Jewelry", "url": "/collections/all" } },
+        "tile-6": { "type": "slide", "settings": { "video": "https://youtu.be/pZ8HAi-bcRE", "caption": "Gems & Stones", "url": "/collections/all" } },
+        "tile-7": { "type": "slide", "settings": { "image_url": "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?w=1600&h=2000&fit=crop&q=80&auto=format", "caption": "One of a Kind", "url": "/collections/all" } }
       },
-      "block_order": ["slide-1", "slide-2", "slide-3"],
-      "settings": {
-        "eyebrow": "Lookbook",
-        "title": "The Campaign"
-      }
+      "block_order": ["tile-1", "tile-2", "tile-3", "tile-4", "tile-5", "tile-6", "tile-7"]
+    },
+    "category-mosaic-2": {
+      "type": "editorial-carousel",
+      "blocks": {
+        "cat-1": { "type": "slide", "settings": { "image_url": "https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=1600&h=2000&fit=crop&q=80&auto=format", "caption": "Clothing", "url": "/collections/all" } },
+        "cat-2": { "type": "slide", "settings": { "image_url": "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=1600&h=2000&fit=crop&q=80&auto=format", "caption": "Accessories", "url": "/collections/all" } },
+        "cat-3": { "type": "slide", "settings": { "image_url": "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?w=900&h=2500&fit=crop&q=80&auto=format", "caption": "Collabs", "url": "/collections/all" } },
+        "cat-4": { "type": "slide", "settings": { "image_url": "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=900&h=2500&fit=crop&q=80&auto=format", "caption": "Brand", "url": "/pages/about" } },
+        "cat-5": { "type": "slide", "settings": { "image_url": "https://images.unsplash.com/photo-1635767798638-3e25273a8236?w=900&h=2500&fit=crop&q=80&auto=format", "caption": "Archive", "url": "/collections/all" } }
+      },
+      "block_order": ["cat-1", "cat-2", "cat-3", "cat-4", "cat-5"],
+      "settings": {}
     },
     "brand-story": {
       "type": "brand-story",
       "settings": {
-        "eyebrow": "Our Story",
-        "heading": "Crafted for the bold.",
-        "button_label": "Our Story"
+        "eyebrow": "",
+        "heading": "We defend imperfection as truth. Time invested as value. We don't renderize. We don't mass produce.",
+        "button_label": "",
+        "image_url": "https://images.unsplash.com/photo-1600003014755-ba31aa59c4b6?w=2000&h=1200&fit=crop&q=80&auto=format"
       }
     },
-    "newsletter": {
-      "type": "newsletter",
-      "settings": {
-        "eyebrow": "Stay in the loop",
-        "heading": "Get 10% off your first order",
-        "subheading": "Subscribe for early access to drops, exclusive offers and editorials."
-      }
+    "media-strip": {
+      "type": "media-strip",
+      "blocks": {
+        "media-1": { "type": "item", "settings": { "video": "https://youtu.be/pZ8HAi-bcRE" } },
+        "media-2": { "type": "item", "settings": { "image_url": "https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=800&h=1100&fit=crop&q=80&auto=format" } },
+        "media-3": { "type": "item", "settings": { "image_url": "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&h=1100&fit=crop&q=80&auto=format" } },
+        "media-4": { "type": "item", "settings": { "image_url": "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=800&h=1100&fit=crop&q=80&auto=format" } },
+        "media-5": { "type": "item", "settings": { "image_url": "https://images.unsplash.com/photo-1635767798638-3e25273a8236?w=800&h=1100&fit=crop&q=80&auto=format" } },
+        "media-6": { "type": "item", "settings": { "image_url": "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?w=800&h=1100&fit=crop&q=80&auto=format" } }
+      },
+      "block_order": ["media-1", "media-2", "media-3", "media-4", "media-5", "media-6"],
+      "settings": {}
     }
   },
-  "order": ["hero", "featured-collection", "editorial-carousel", "brand-story", "newsletter"]
+  "order": ["hero", "featured-collection", "editorial-carousel", "brand-story", "category-mosaic-2", "media-strip"]
 }

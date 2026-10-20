@@ -10,9 +10,12 @@
 | Node.js | v22.23.3 | Required by Shopify CLI (via nix) |
 | Nix | 2.34.4 | Dev environment pinning via flake |
 | direnv | 2.38.1 | Auto-loads nix shell on `cd` |
-| Vite | TBD (to install) | Bundler via `vite-plugin-shopify` |
-| Tailwind CSS | v4 | CSS framework via `@tailwindcss/vite` |
-| Shopify CLI | TBD (to install) | `@shopify/cli` + `@shopify/theme` npm packages |
+| Vite | 8.3.4 | Bundler via `vite-plugin-shopify` (installed) |
+| Tailwind CSS | 4.3.3 | CSS framework via `@tailwindcss/vite` (installed) |
+| Shopify CLI | 4.9.4 | `@shopify/cli` + `@shopify/theme` (installed) |
+| Python | 3.12.15 | `python312` in nix shell — for PDF rasterization |
+| PyMuPDF | — | `python312Packages.pymupdf` — PDF → PNG rasterizer |
+| Pillow | — | `python312Packages.pillow` — image compression/conversion |
 
 Fonts: **Cormorant Garamond** (fallback for Roslindale) + **Inter** (fallback for Acumin/Myriad Pro) — both from Google Fonts.
 
@@ -44,7 +47,7 @@ Liquid template tree:
 ├── templates/             — page templates (index, collection, product, page, cart)
 ├── config/                — settings_schema.json
 ├── locales/               — en.default.json
-├── design/                — rasterized PDF page PNGs + emanuelebicocchi.it screenshots
+├── design/                — 7 rasterized PDF pages (page-1.jpg through page-7.jpg, 3840px)
 └── assets/                — Vite build output (auto-generated, do not edit)
 ```
 
@@ -64,6 +67,9 @@ Liquid template tree:
 ```bash
 # Enter dev shell (auto via direnv, or manually):
 nix develop
+
+# Run commands with nix/direnv (if direnv auto-load doesn't work):
+cd /Users/jeysonrojas/Documents/dev/40onz && PATH="/nix/var/nix/profiles/default/bin:$PATH" direnv exec . <command>
 
 # Install dependencies (after package.json exists):
 bun install
@@ -86,6 +92,11 @@ bun run theme:check
 
 > **Note**: `bun run dev` and `bun run theme:dev` are meant to run together — Vite serves assets, Shopify CLI proxies the store preview.
 
+## Workflow Rules
+- **NEVER commit** without explicit user approval — always wait for the user to say "commit" before running `git commit`. No auto-commits after edits.
+- When the user shares screenshots, always visually compare before making changes.
+- **Local testing**: The theme is tested locally at `http://127.0.0.1:9292` using `bun run theme:dev`. Do NOT push to Shopify unless explicitly requested. Changes are visible locally after rebuild.
+
 ## Gotchas & Known Issues
 - **nix flake path tracking**: `flake.nix` must be `git add`-ed before `nix flake lock` will see it — Nix only reads git-tracked files.
 - **direnv hook**: `direnv allow` must be run once per clone. If the shell doesn't activate, check that direnv is hooked into your shell (`eval "$(direnv hook zsh)"` in `.zshrc`).
@@ -94,6 +105,9 @@ bun run theme:check
 - **Shopify store URLs**: internal = `yxxehz-a9.myshopify.com`, custom domain = `dev.cuarentaonzas.com`. Both wired into `package.json` scripts.
 - **PDF rasterization**: the "ECOMM 40OZ" design PDF is not yet in the repo. When obtained, rasterize each page with `qlmanage -t -s 2560 -o design/` and commit to `design/`.
 - **Mobile breakpoints**: PDF mockups only show 1920px desktop. Mobile layouts mirror emanuelebicocchi.it responsive patterns (mobile nav drawer, single-column grid).
+- **Hero video**: `hero.liquid` supports `video_url` (YouTube/Vimeo) taking priority over `image_picker`. Requires `accept: ["youtube", "vimeo"]` in schema — Shopify rejects `video_url` without `accept`. Poster/fallback uses `section.settings.image`.
+- **Header layout**: uses `grid-cols-[1fr_auto_1fr]` — never use `justify-between` + `ml-auto` together (flex conflict causes icon/nav crowding). Right column always `justify-end` for flush-right icons.
+- **Cart badge**: renders `0` when empty — always wrap `{% if cart.item_count > 0 %}` or it shows "0" on the icon.
 
 ## Recent Context
 - `fc8a0cd` — Added nix flake + direnv environment (`flake.nix`, `.envrc`, `flake.lock`). Pinned nixpkgs-unstable @ 2026-10-16. Provides bun 1.4.2 + node 22.23.3.
@@ -101,12 +115,14 @@ bun run theme:check
 - **Next steps**: scaffold `package.json` with bun, install Vite + Tailwind v4 + Shopify CLI, create Liquid theme structure.
 
 ## Open TODOs
-- [ ] `bun init` + install dev deps (`vite`, `vite-plugin-shopify`, `@tailwindcss/vite`, `tailwindcss`, `@shopify/cli`, `@shopify/theme`)
-- [ ] Create `vite.config.js`
-- [ ] Create `frontend/entrypoints/theme.css` (Tailwind v4 entrypoint + `@theme` tokens)
-- [ ] Create `frontend/entrypoints/theme.js` (vanilla JS: mega-menu, cart drawer, carousel, announcement bar, image swap)
-- [ ] Create full Liquid tree: `layout/theme.liquid`, 8 sections, 4 snippets, 5 templates
-- [ ] Obtain and rasterize "ECOMM 40OZ" PDF into `design/`
-- [ ] Take reference screenshots of emanuelebicocchi.it
-- [ ] Provide Shopify dev store `.myshopify.com` URL to wire up CLI scripts
-- [ ] Run `shopify theme check` — target 0 errors
+- [x] `bun init` + install dev deps (`vite`, `vite-plugin-shopify`, `@tailwindcss/vite`, `tailwindcss`, `@shopify/cli`, `@shopify/theme`)
+- [x] Create `vite.config.js`
+- [x] Create `frontend/entrypoints/theme.css` (Tailwind v4 entrypoint + `@theme` tokens)
+- [x] Create `frontend/entrypoints/theme.js` (vanilla JS: mega-menu, cart drawer, carousel, announcement bar, image swap)
+- [x] Create full Liquid tree: `layout/theme.liquid`, 8 sections, 4 snippets, 5 templates
+- [x] Provide Shopify dev store `.myshopify.com` URL — wired into `package.json` scripts
+- [x] Run `shopify theme check` — 0 errors, 3 warnings (Google Fonts remote asset warnings, acceptable)
+- [x] Obtain and rasterize "ECOMM 40OZ" PDF into `design/` — 7 JPEG pages at 3840px width, ready for visual comparison
+- [ ] Take reference screenshots of emanuelebicocchi.it — needed for section visual matching
+- [ ] Fix `assets/.vite/` subfolder upload — `.shopifyignore` glob updated; verify next push syncs correctly
+- [ ] Refine hero/header spacing and typography against PDF mockups once `design/` has PNGs

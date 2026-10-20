@@ -1,0 +1,74 @@
+{%- comment -%}
+  Fills a container with the best available media: video (mp4/yt/vimeo) > uploaded image > remote image > placeholder.
+  Expects: settings (block.settings), zoom (boolean, adds hover scale), alt (string)
+{%- endcomment -%}
+
+{%- liquid
+  assign video_url = settings.video | strip
+  assign is_mp4 = false
+  if video_url contains '.mp4'
+    assign is_mp4 = true
+  endif
+  assign yt_id = ''
+  assign vimeo_id = ''
+  if video_url != blank and is_mp4 == false
+    if video_url contains 'youtu.be/'
+      assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first | split: '&' | first
+    elsif video_url contains 'watch?v='
+      assign yt_id = video_url | split: 'watch?v=' | last | split: '&' | first
+    elsif video_url contains 'youtube.com/embed/'
+      assign yt_id = video_url | split: 'embed/' | last | split: '?' | first
+    elsif video_url contains 'vimeo.com/'
+      assign vimeo_id = video_url | split: 'vimeo.com/' | last | split: '?' | first
+    endif
+  endif
+  assign zoom_class = ''
+  if zoom
+    assign zoom_class = ' transition-transform duration-700 ease-out group-hover:scale-105'
+  endif
+-%}
+
+{%- if video_url != blank and is_mp4 -%}
+  <video src="{{ video_url }}" autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover{{ zoom_class }}"></video>
+{%- elsif yt_id != blank -%}
+  <iframe
+    src="https://www.youtube.com/embed/{{ yt_id }}?autoplay=1&mute=1&loop=1&playlist={{ yt_id }}&controls=0&modestbranding=1&playsinline=1&rel=0&fs=0&disablekb=1&iv_load_policy=3&enablejsapi=1"
+    class="absolute inset-0 w-full h-full object-cover pointer-events-none{{ zoom_class }}"
+    allow="autoplay; encrypted-media"
+    allowfullscreen
+    title="{{ alt | escape | default: 'Media' }}"
+  ></iframe>
+{%- elsif vimeo_id != blank -%}
+  <iframe
+    src="https://player.vimeo.com/video/{{ vimeo_id }}?autoplay=1&muted=1&loop=1&background=1&byline=0&title=0&portrait=0"
+    class="absolute inset-0 w-full h-full object-cover pointer-events-none{{ zoom_class }}"
+    allow="autoplay; fullscreen"
+    title="{{ alt | escape | default: 'Media' }}"
+  ></iframe>
+{%- elsif settings.image != blank -%}
+  <img
+    src="{{ settings.image | image_url: width: 1200 }}"
+    srcset="
+      {{ settings.image | image_url: width: 800 }} 800w,
+      {{ settings.image | image_url: width: 1200 }} 1200w,
+      {{ settings.image | image_url: width: 1600 }} 1600w
+    "
+    sizes="(max-width: 768px) 100vw, 50vw"
+    width="1600"
+    height="2000"
+    alt="{{ settings.image.alt | escape | default: alt | escape }}"
+    loading="lazy"
+    class="absolute inset-0 w-full h-full object-cover{{ zoom_class }}"
+  >
+{%- elsif settings.image_url != blank -%}
+  <img
+    src="{{ settings.image_url }}"
+    width="1600"
+    height="2000"
+    alt="{{ alt | escape }}"
+    loading="lazy"
+    class="absolute inset-0 w-full h-full object-cover{{ zoom_class }}"
+  >
+{%- else -%}
+  <div class="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a]"></div>
+{%- endif -%}

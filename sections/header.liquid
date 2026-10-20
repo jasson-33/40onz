@@ -1,33 +1,41 @@
 <header
-  class="fixed top-0 left-0 right-0 z-30 w-full"
-  style="height: var(--header-h, 72px);"
+  class="fixed top-0 left-0 right-0 z-30 w-full transition-all duration-300"
+  data-header
+  style="height: var(--header-h, 140px);"
   role="banner"
 >
+  <div
+    data-mega-menu-overlay
+    aria-hidden="true"
+    class="fixed left-0 right-0 bottom-0 z-20 bg-black/45 backdrop-blur-sm opacity-0 aria-[hidden=false]:opacity-100 pointer-events-none transition-opacity duration-300"
+    style="top: calc(var(--header-h, 140px) - 8px);"
+  ></div>
+
   {%- comment -%} Gradient fade so header reads over hero image {%- endcomment -%}
-  <div class="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent pointer-events-none"></div>
+  <div class="absolute inset-0 z-0 bg-gradient-to-b from-black/50 to-transparent backdrop-blur-sm pointer-events-none"></div>
 
-  <div class="relative z-10 h-full max-w-[1920px] mx-auto flex items-center px-8 lg:px-12">
+  <div class="relative z-30 h-full max-w-[1920px] mx-auto grid grid-cols-[1fr_auto_1fr] items-center h-full header-grid px-6 lg:px-10">
 
-    {%- comment -%} Left — nav links {%- endcomment -%}
-    <nav class="hidden lg:flex items-center gap-10" aria-label="Main navigation">
-      {%- for link in linklists[section.settings.menu].links -%}
+    {%- comment -%} Left column — nav links {%- endcomment -%}
+    <nav class="hidden lg:flex items-center gap-8 justify-start" aria-label="Main navigation">
+      {%- for link in section.settings.menu.links -%}
         {%- if link.links.size > 0 -%}
           <div class="relative">
-            <button
-              data-mega-menu-trigger="{{ link.title | handle }}"
+            <a
+              href="{{ link.url }}"
+              data-mega-menu-trigger="{{ forloop.index }}"
               aria-expanded="false"
               aria-haspopup="true"
-              class="text-xs tracking-[0.2em] uppercase text-white/80 hover:text-white transition-colors duration-200"
+              class="menu-nav-item text-[11px] tracking-[0.22em] uppercase text-white/85 hover:text-white transition-colors duration-200"
             >
               {{ link.title }}
-            </button>
-            {% render 'mega-menu', menu_item: link %}
+            </a>
+            {% render 'mega-menu', menu: link.links, index: forloop.index %}
           </div>
         {%- else -%}
           <a
             href="{{ link.url }}"
-            class="text-xs tracking-[0.2em] uppercase text-white/80 hover:text-white transition-colors duration-200{% if link.active %} text-white{% endif %}"
-            {% if link.active %}aria-current="page"{% endif %}
+            class="menu-nav-item text-[11px] tracking-[0.22em] uppercase text-white/85 hover:text-white transition-colors duration-200"
           >
             {{ link.title }}
           </a>
@@ -35,28 +43,41 @@
       {%- endfor -%}
     </nav>
 
-    {%- comment -%} Center — logo (positioned absolutely so nav and icons don't push it) {%- endcomment -%}
+    {%- comment -%} Center column — logo, always centered regardless of nav/icon widths {%- endcomment -%}
     <a
       href="{{ routes.root_url }}"
-      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center"
+      class="flex items-center justify-center"
       aria-label="{{ shop.name }}"
     >
       {%- if section.settings.logo != blank -%}
         <img
+          data-logo-default
           src="{{ section.settings.logo | image_url: width: 300 }}"
           alt="{{ shop.name }}"
           width="{{ section.settings.logo_width | default: 200 }}"
           height="auto"
           loading="eager"
-          class="h-9 w-auto object-contain"
+          class="h-9 w-auto object-contain transition-opacity duration-300"
         >
-      {%- else -%}
+      {%- endif -%}
+      {%- if section.settings.logo_scrolled != blank -%}
+        <img
+          data-logo-scrolled
+          src="{{ section.settings.logo_scrolled | image_url: width: 300 }}"
+          alt="{{ shop.name }}"
+          width="{{ section.settings.logo_width_scrolled | default: 150 }}"
+          height="auto"
+          loading="eager"
+          class="max-w-[65px] max-h-[71px] w-auto h-auto object-contain opacity-0 absolute transition-opacity duration-300"
+        >
+      {%- endif -%}
+      {%- if section.settings.logo == blank and section.settings.logo_scrolled == blank -%}
         <span class="font-display text-xl tracking-[0.3em] uppercase text-white">{{ shop.name }}</span>
       {%- endif -%}
     </a>
 
-    {%- comment -%} Right — language, search, cart, account, mobile toggle {%- endcomment -%}
-    <div class="flex items-center gap-6 ml-auto">
+    {%- comment -%} Right column — language, search, cart, account {%- endcomment -%}
+    <div class="flex items-center gap-6 justify-end">
 
       {%- comment -%} Language switcher {%- endcomment -%}
       {%- if section.settings.show_language_selector and localization.available_languages.size > 1 -%}
@@ -146,20 +167,40 @@
       px-8 pt-28 pb-12 flex flex-col gap-8
     "
   >
-    {%- for link in linklists[section.settings.menu].links -%}
-      <a
-        href="{{ link.url }}"
-        class="text-2xl font-display font-light tracking-[0.15em] uppercase hover:text-[#c9a96e] transition-colors duration-200{% if link.active %} text-[#c9a96e]{% endif %}"
-      >
-        {{ link.title }}
-      </a>
+    {%- for link in section.settings.menu.links -%}
+      {%- if link.links.size > 0 -%}
+        <div>
+          <a
+            href="{{ link.url }}"
+            class="text-2xl font-display font-light tracking-[0.15em] uppercase hover:text-[#c9a96e] transition-colors duration-200"
+          >
+            {{ link.title }}
+          </a>
+          <ul class="flex flex-col gap-4 mt-4 pl-4">
+            {%- for sublink in link.links -%}
+              <li>
+                <a href="{{ sublink.url }}" class="text-lg text-white/80 hover:text-[#c9a96e] transition-colors duration-200">
+                  {{ sublink.title }}
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- else -%}
+        <a
+          href="{{ link.url }}"
+          class="text-2xl font-display font-light tracking-[0.15em] uppercase hover:text-[#c9a96e] transition-colors duration-200"
+        >
+          {{ link.title }}
+        </a>
+      {%- endif -%}
     {%- endfor -%}
   </nav>
 </header>
 
 {%- comment -%} Spacer only on non-hero pages (hero section is full-bleed under the fixed header) {%- endcomment -%}
 {%- unless template == 'index' -%}
-  <div style="height: var(--header-h, 72px);"></div>
+  <div style="height: var(--header-h, 140px);"></div>
 {%- endunless -%}
 
 {% schema %}
@@ -170,7 +211,7 @@
     {
       "type": "image_picker",
       "id": "logo",
-      "label": "Logo image"
+      "label": "Logo image (initial)"
     },
     {
       "type": "range",
@@ -179,14 +220,30 @@
       "max": 320,
       "step": 10,
       "unit": "px",
-      "label": "Logo width",
+      "label": "Logo width (initial)",
       "default": 200
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_scrolled",
+      "label": "Logo image (scrolled)"
+    },
+    {
+      "type": "range",
+      "id": "logo_width_scrolled",
+      "min": 60,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width (scrolled)",
+      "default": 150
     },
     {
       "type": "link_list",
       "id": "menu",
       "label": "Navigation menu",
-      "default": "main-menu"
+      "default": "main-menu",
+      "info": "Create nested menu items in Shopify Admin → Online Store → Navigation. Nested items will appear in the mega-menu."
     },
     {
       "type": "checkbox",

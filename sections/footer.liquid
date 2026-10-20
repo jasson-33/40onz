@@ -1,143 +1,133 @@
-<footer class="bg-[#0a0a0a] border-t border-[#2a2a2a] pt-16 pb-8 px-6 lg:px-10" role="contentinfo">
-  <div class="max-w-[1920px] mx-auto">
+<footer class="bg-black text-[#b7b7b7]">
 
-    {%- comment -%} Top row: logo + nav columns {%- endcomment -%}
-    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10 mb-16">
+  {%- comment -%} Row 1 — service claims {%- endcomment -%}
+  <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-b border-white/10 max-w-[1920px] mx-auto">
+    <li class="py-16 px-6 text-center text-[11px] tracking-[0.22em] uppercase text-white/80 border border-white/10">Bespoke · Care · Restoration</li>
+    <li class="py-16 px-6 text-center text-[11px] tracking-[0.22em] uppercase text-white/80 border border-white/10 border-t-0 lg:border-t">Headquarter</li>
+    <li class="py-16 px-6 text-center text-[11px] tracking-[0.22em] uppercase text-white/80 border border-white/10 border-t-0 lg:border-t">Shipping</li>
+    <li class="py-16 px-6 text-center text-[11px] tracking-[0.22em] uppercase text-white/80 border border-white/10 border-t-0 lg:border-t">Worldwide Delivery</li>
+  </ul>
 
-      {%- comment -%} Brand column {%- endcomment -%}
-      <div class="col-span-2 md:col-span-1 lg:col-span-2 flex flex-col gap-4">
-        <a href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
-          {%- if section.settings.footer_logo != blank -%}
-            <img
-              src="{{ section.settings.footer_logo | image_url: width: 160 }}"
-              alt="{{ shop.name }}"
-              width="120"
-              height="auto"
-              loading="lazy"
-              class="h-7 w-auto object-contain"
-            >
-          {%- else -%}
-            <span class="font-display text-lg tracking-[0.2em] uppercase">{{ shop.name }}</span>
-          {%- endif -%}
-        </a>
-        {%- if section.settings.tagline != blank -%}
-          <p class="text-sm text-[#6b6b6b] max-w-xs leading-relaxed">{{ section.settings.tagline }}</p>
+  {%- comment -%} Row 2 — logo + legal + links {%- endcomment -%}
+  <div class="flex flex-col md:flex-row items-center justify-around gap-10 md:gap-20 lg:gap-32 px-6 lg:px-10 py-20 border-b border-white/10 max-w-[1400px] mx-auto">
+    <div class="flex items-center justify-center gap-4 sm:gap-10 shrink-0">
+      <a href="{{ routes.root_url }}" class="text-white text-2xl font-display tracking-[0.08em] uppercase">
+        {{ section.settings.logo_text | default: shop.name }}
+      </a>
+      <div class="text-[10px] leading-relaxed tracking-[0.12em] uppercase text-[#6b6b6b]">
+        <p>© {{ shop.name }} · {{ 'now' | date: '%Y' }} · All rights reserved.</p>
+        {%- if section.settings.address != blank -%}
+          <p class="mt-3">{{ section.settings.address }}</p>
         {%- endif -%}
-
-        {%- comment -%} Socials {%- endcomment -%}
-        <div class="flex gap-4 mt-2">
-          {%- if section.settings.instagram_url != blank -%}
-            <a href="{{ section.settings.instagram_url }}" aria-label="Instagram" class="text-[#6b6b6b] hover:text-[#fafafa] transition-colors duration-200" target="_blank" rel="noopener">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="2" y="2" width="20" height="20" rx="5"/>
-                <circle cx="12" cy="12" r="5"/>
-                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-              </svg>
-            </a>
-          {%- endif -%}
-          {%- if section.settings.tiktok_url != blank -%}
-            <a href="{{ section.settings.tiktok_url }}" aria-label="TikTok" class="text-[#6b6b6b] hover:text-[#fafafa] transition-colors duration-200" target="_blank" rel="noopener">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.77a4.85 4.85 0 01-1.01-.08z"/>
-              </svg>
-            </a>
-          {%- endif -%}
-        </div>
       </div>
-
-      {%- comment -%} Nav link columns {%- endcomment -%}
-      {%- for block in section.blocks -%}
-        <div {{ block.shopify_attributes }}>
-          <p class="text-xs tracking-widest uppercase text-[#6b6b6b] mb-4">{{ block.settings.heading }}</p>
-          {%- if linklists[block.settings.menu].links.size > 0 -%}
-            <ul class="flex flex-col gap-2">
-              {%- for link in linklists[block.settings.menu].links -%}
-                <li>
-                  <a
-                    href="{{ link.url }}"
-                    class="text-sm text-[#fafafa] hover:text-[#c9a96e] transition-colors duration-200"
-                  >
-                    {{ link.title }}
-                  </a>
-                </li>
-              {%- endfor -%}
-            </ul>
-          {%- endif -%}
-        </div>
-      {%- endfor -%}
     </div>
 
-    {%- comment -%} Bottom bar {%- endcomment -%}
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4 border-t border-[#2a2a2a] pt-8 text-xs text-[#6b6b6b]">
-      <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</p>
-      {%- if section.settings.payment_text != blank -%}
-        <p>{{ section.settings.payment_text }}</p>
-      {%- endif -%}
+    <div class="flex flex-wrap gap-10 md:gap-14 lg:gap-20 justify-start items-start shrink-0">
+      <div>
+        <p class="text-[10px] tracking-[0.22em] uppercase text-white/60 mb-4">Contacts</p>
+        <ul class="flex flex-col gap-2.5 text-[11px] tracking-[0.1em] uppercase">
+          <li><a href="/pages/contact" class="text-[#9e9e9e] hover:text-white transition-colors duration-200">Contact</a></li>
+          <li><a href="/pages/terms" class="text-[#9e9e9e] hover:text-white transition-colors duration-200">Terms and conditions</a></li>
+          <li><a href="/pages/payment-methods" class="text-[#9e9e9e] hover:text-white transition-colors duration-200">Payment methods</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="text-[10px] tracking-[0.22em] uppercase text-white/60 mb-4">Warranty</p>
+        <ul class="flex flex-col gap-2.5 text-[11px] tracking-[0.1em] uppercase">
+          <li><a href="/pages/warranty" class="text-[#9e9e9e] hover:text-white transition-colors duration-200">Warranty</a></li>
+          <li><a href="/policies/privacy-policy" class="text-[#9e9e9e] hover:text-white transition-colors duration-200">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="text-[10px] tracking-[0.22em] uppercase text-white/60 mb-4">Aftercare</p>
+        <ul class="flex flex-col gap-2.5 text-[11px] tracking-[0.1em] uppercase">
+          <li><a href="/pages/size-guide" class="text-[#9e9e9e] hover:text-white transition-colors duration-200">Size Guide</a></li>
+          <li><a href="/pages/how-to-return" class="text-[#9e9e9e] hover:text-white transition-colors duration-200">How to Return</a></li>
+        </ul>
+      </div>
     </div>
   </div>
+
+  {%- comment -%} Row 3 — newsletter {%- endcomment -%}
+  <div class="flex flex-col sm:flex-row sm:items-center gap-6 px-6 lg:px-10 py-20 max-w-[1920px] mx-auto">
+    <p class="text-[11px] tracking-[0.22em] uppercase text-white/80 shrink-0">Newsletter</p>
+
+    {%- form 'customer', class: 'flex items-stretch gap-3 w-full max-w-md' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <input
+        type="email"
+        name="contact[email]"
+        required
+        placeholder="E-mail"
+        aria-label="Email address"
+        class="flex-1 bg-transparent border border-white/25 px-4 py-3 text-[11px] tracking-[0.12em] uppercase text-white placeholder:text-[#6b6b6b] focus:outline-none focus:border-white/60 transition-colors duration-200"
+      >
+      <button
+        type="submit"
+        class="bg-[#8a8a8a] hover:bg-white text-[#111] text-[10px] tracking-[0.22em] uppercase px-6 transition-colors duration-200"
+      >
+        Subscribe
+      </button>
+    {%- endform -%}
+
+    {%- if section.settings.newsletter_text != blank -%}
+      <p class="text-[10px] tracking-[0.08em] uppercase text-[#6b6b6b] max-w-md leading-relaxed">
+        {{ section.settings.newsletter_text }}
+      </p>
+    {%- endif -%}
+  </div>
+
 </footer>
 
 {% schema %}
 {
   "name": "Footer",
-  "limit": 1,
   "settings": [
     {
-      "type": "image_picker",
-      "id": "footer_logo",
-      "label": "Footer logo"
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo text",
+      "default": "Cuarenta Onzas"
     },
     {
       "type": "text",
-      "id": "tagline",
-      "label": "Tagline",
-      "default": "Street culture meets fine craft."
+      "id": "address",
+      "label": "Address",
+      "default": "Calle 10 #43A - 30 · El Poblado · MDE · Colombia"
     },
     {
-      "type": "url",
-      "id": "instagram_url",
-      "label": "Instagram URL"
-    },
-    {
-      "type": "url",
-      "id": "tiktok_url",
-      "label": "TikTok URL"
-    },
-    {
-      "type": "text",
-      "id": "payment_text",
-      "label": "Payment / shipping note",
-      "default": "Secure checkout · Worldwide shipping"
+      "type": "textarea",
+      "id": "newsletter_text",
+      "label": "Newsletter description",
+      "default": "Subscribe to our newsletter and join our circle of collectors. Receive invitations to events, collection launches, and concerts."
     }
   ],
   "blocks": [
     {
-      "type": "link_column",
-      "name": "Link Column",
+      "type": "service",
+      "name": "Service item",
       "settings": [
-        {
-          "type": "text",
-          "id": "heading",
-          "label": "Column heading"
-        },
-        {
-          "type": "link_list",
-          "id": "menu",
-          "label": "Menu"
-        }
+        { "type": "text", "id": "label", "label": "Label" }
+      ]
+    },
+    {
+      "type": "link_column",
+      "name": "Link column",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "link_list", "id": "menu", "label": "Menu" },
+        { "type": "text", "id": "link_1_label", "label": "Link 1 label" },
+        { "type": "url", "id": "link_1_url", "label": "Link 1 URL" },
+        { "type": "text", "id": "link_2_label", "label": "Link 2 label" },
+        { "type": "url", "id": "link_2_url", "label": "Link 2 URL" },
+        { "type": "text", "id": "link_3_label", "label": "Link 3 label" },
+        { "type": "url", "id": "link_3_url", "label": "Link 3 URL" }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Footer",
-      "settings": {
-        "tagline": "Street culture meets fine craft."
-      },
-      "blocks": [
-        { "type": "link_column", "settings": { "heading": "Shop" } },
-        { "type": "link_column", "settings": { "heading": "Info" } }
-      ]
+      "name": "Footer"
     }
   ]
 }

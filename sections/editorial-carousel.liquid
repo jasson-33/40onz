@@ -1,121 +1,154 @@
-<section class="py-[var(--spacing-section,6rem)] overflow-hidden">
+<section class="overflow-hidden">
+  {%- comment -%}
+    Category mosaic — alternating rows of 2 / 3 / 2 / 3 columns.
+    Row pattern repeats every 5 items: idx % 5 < 2 → half width, else third.
+  {%- endcomment -%}
+  <ul class="flex flex-wrap">
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign slot = forloop.index0 | modulo: 5
+        assign col_class = 'md:w-1/3'
+        if slot < 2
+          assign col_class = 'md:w-1/2'
+        endif
 
-  {%- comment -%} Section header {%- endcomment -%}
-  <div class="px-6 lg:px-10 max-w-[1920px] mx-auto mb-8 flex items-end justify-between">
-    <div>
-      {%- if section.settings.eyebrow != blank -%}
-        <p class="text-xs tracking-[0.3em] uppercase text-[#c9a96e] mb-2">{{ section.settings.eyebrow }}</p>
-      {%- endif -%}
-      {%- if section.settings.title != blank -%}
-        <h2 class="font-display text-4xl md:text-5xl font-light">{{ section.settings.title }}</h2>
-      {%- endif -%}
-    </div>
+        assign link_url = block.settings.collection.url | default: block.settings.url
+        assign label = block.settings.caption
+        if label == blank and block.settings.collection != blank
+          assign label = block.settings.collection.title
+        endif
+      -%}
+      <li class="relative w-full {{ col_class }} aspect-[3/4] md:aspect-auto md:h-[92vh] overflow-hidden group" {{ block.shopify_attributes }}>
+        <a href="{{ link_url | default: '#' }}" class="absolute inset-0 block">
+          {%- liquid
+            assign video_url = block.settings.video | strip
+            assign is_mp4 = false
+            if video_url contains '.mp4'
+              assign is_mp4 = true
+            endif
+            assign yt_id = ''
+            assign vimeo_id = ''
+            if video_url != blank and is_mp4 == false
+              if video_url contains 'youtu.be/'
+                assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first | split: '&' | first
+              elsif video_url contains 'watch?v='
+                assign yt_id = video_url | split: 'watch?v=' | last | split: '&' | first
+              elsif video_url contains 'youtube.com/embed/'
+                assign yt_id = video_url | split: 'embed/' | last | split: '?' | first
+              elsif video_url contains 'vimeo.com/'
+                assign vimeo_id = video_url | split: 'vimeo.com/' | last | split: '?' | first
+              endif
+            endif
+          -%}
 
-    {%- comment -%} Carousel controls {%- endcomment -%}
-    <div class="flex gap-3 shrink-0">
-      <button
-        data-carousel-prev
-        aria-label="Previous"
-        class="w-10 h-10 border border-[#2a2a2a] flex items-center justify-center text-[#6b6b6b] hover:border-[#fafafa] hover:text-[#fafafa] transition-colors duration-200 disabled:opacity-30 disabled:pointer-events-none"
-      >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M10 3L5 8l5 5"/>
-        </svg>
-      </button>
-      <button
-        data-carousel-next
-        aria-label="Next"
-        class="w-10 h-10 border border-[#2a2a2a] flex items-center justify-center text-[#6b6b6b] hover:border-[#fafafa] hover:text-[#fafafa] transition-colors duration-200 disabled:opacity-30 disabled:pointer-events-none"
-      >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M6 3l5 5-5 5"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  {%- comment -%} Carousel track {%- endcomment -%}
-  <div data-carousel class="relative">
-    <div data-carousel-track class="flex">
-      {%- for block in section.blocks -%}
-        <div
-          data-carousel-slide
-          class="min-w-full lg:min-w-[50%] xl:min-w-[33.333%] px-2 first:pl-6 lg:first:pl-10"
-          {{ block.shopify_attributes }}
-        >
-          <div class="relative aspect-[3/4] overflow-hidden bg-[#111]">
-            {%- if block.settings.image != blank -%}
+          <div class="absolute inset-0 overflow-hidden bg-[#1a1a1a]">
+            {%- if video_url != blank and is_mp4 -%}
+              <video src="{{ video_url }}" autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"></video>
+            {%- elsif yt_id != blank -%}
+              <iframe
+                src="https://www.youtube.com/embed/{{ yt_id }}?autoplay=1&mute=1&loop=1&playlist={{ yt_id }}&controls=0&modestbranding=1&playsinline=1&rel=0&fs=0&disablekb=1&iv_load_policy=3&enablejsapi=1"
+                class="absolute inset-0 w-full h-full object-cover pointer-events-none transition-transform duration-700 ease-out group-hover:scale-105"
+                allow="autoplay; encrypted-media"
+                allowfullscreen
+                title="{{ label | escape | default: 'Editorial video' }}"
+              ></iframe>
+            {%- elsif vimeo_id != blank -%}
+              <iframe
+                src="https://player.vimeo.com/video/{{ vimeo_id }}?autoplay=1&muted=1&loop=1&background=1&byline=0&title=0&portrait=0"
+                class="absolute inset-0 w-full h-full object-cover pointer-events-none transition-transform duration-700 ease-out group-hover:scale-105"
+                allow="autoplay; fullscreen"
+                title="{{ label | escape | default: 'Editorial video' }}"
+              ></iframe>
+            {%- elsif block.settings.image != blank -%}
               <img
-                src="{{ block.settings.image | image_url: width: 800 }}"
+                src="{{ block.settings.image | image_url: width: 1200 }}"
                 srcset="
-                  {{ block.settings.image | image_url: width: 600 }} 600w,
                   {{ block.settings.image | image_url: width: 800 }} 800w,
-                  {{ block.settings.image | image_url: width: 1000 }} 1000w
+                  {{ block.settings.image | image_url: width: 1200 }} 1200w,
+                  {{ block.settings.image | image_url: width: 1600 }} 1600w
                 "
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                width="1000"
-                height="1333"
-                alt="{{ block.settings.image.alt | escape | default: block.settings.caption | escape }}"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                width="1600"
+                height="2000"
+                alt="{{ block.settings.image.alt | escape | default: label | escape }}"
                 loading="lazy"
-                class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              >
+            {%- elsif block.settings.image_url != blank -%}
+              <img
+                src="{{ block.settings.image_url }}"
+                width="1600"
+                height="2000"
+                alt="{{ label | escape }}"
+                loading="lazy"
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               >
             {%- else -%}
               <div class="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a]"></div>
             {%- endif -%}
-            {%- if block.settings.caption != blank -%}
-              <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 to-transparent">
-                <p class="text-sm text-[#fafafa]">{{ block.settings.caption }}</p>
-              </div>
-            {%- endif -%}
           </div>
-        </div>
-      {%- endfor -%}
-    </div>
-  </div>
+
+          <span class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500"></span>
+
+          {%- if label != blank -%}
+            <span class="absolute bottom-8 left-0 right-0 z-10 text-center text-[12px] tracking-[0.28em] uppercase text-white">
+              {{ label }}
+            </span>
+          {%- endif -%}
+        </a>
+      </li>
+    {%- endfor -%}
+  </ul>
 </section>
 
 {% schema %}
 {
-  "name": "Editorial Carousel",
-  "settings": [
-    {
-      "type": "text",
-      "id": "eyebrow",
-      "label": "Eyebrow",
-      "default": "Lookbook"
-    },
-    {
-      "type": "text",
-      "id": "title",
-      "label": "Title",
-      "default": "The Campaign"
-    }
-  ],
+  "name": "Category Mosaic",
+  "settings": [],
   "blocks": [
     {
       "type": "slide",
-      "name": "Slide",
+      "name": "Category tile",
       "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link URL (fallback)"
+        },
         {
           "type": "image_picker",
           "id": "image",
           "label": "Image"
         },
         {
+          "type": "url",
+          "id": "image_url",
+          "label": "Image URL (fallback)"
+        },
+        {
+          "type": "url",
+          "id": "video",
+          "label": "Video URL (MP4, YouTube or Vimeo)"
+        },
+        {
           "type": "text",
           "id": "caption",
-          "label": "Caption"
+          "label": "Label"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Editorial Carousel",
-      "settings": {
-        "title": "The Campaign"
-      },
+      "name": "Category Mosaic",
       "blocks": [
+        { "type": "slide" },
+        { "type": "slide" },
         { "type": "slide" },
         { "type": "slide" },
         { "type": "slide" }

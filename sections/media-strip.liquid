@@ -1,0 +1,102 @@
+<section class="relative overflow-hidden bg-black">
+
+  <div class="group/strip relative">
+    <ul
+      data-strip-track
+      class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
+      {%- for block in section.blocks -%}
+        <li
+          class="relative shrink-0 snap-start w-[70vw] sm:w-[38vw] lg:w-[26vw] xl:w-[20vw] h-[40vh] md:h-[48vh] overflow-hidden group border-r border-black/40"
+          {{ block.shopify_attributes }}
+        >
+          <a href="{{ block.settings.url | default: '#' }}" class="absolute inset-0 block">
+            <div class="absolute inset-0 overflow-hidden bg-[#1a1a1a]">
+              {% render 'media-fill', settings: block.settings, zoom: true, alt: block.settings.caption %}
+            </div>
+            {%- if block.settings.caption != blank -%}
+              <span class="absolute bottom-4 left-4 z-10 text-[10px] tracking-[0.22em] uppercase text-white/85">
+                {{ block.settings.caption }}
+              </span>
+            {%- endif -%}
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    {%- comment -%} Chevron arrows — appear on hover {%- endcomment -%}
+    <button
+      data-strip-prev
+      type="button"
+      aria-label="Previous"
+      class="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white/80 hover:text-white transition-all duration-200 hidden md:block opacity-0 group-hover/strip:opacity-100"
+    >
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 4l-8 8 8 8"/>
+      </svg>
+    </button>
+    <button
+      data-strip-next
+      type="button"
+      aria-label="Next"
+      class="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white/80 hover:text-white transition-all duration-200 hidden md:block opacity-0 group-hover/strip:opacity-100"
+    >
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 4l8 8-8 8"/>
+      </svg>
+    </button>
+  </div>
+
+</section>
+
+{% schema %}
+{
+  "name": "Media Strip",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Media item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "image_url",
+          "label": "Image URL (fallback)"
+        },
+        {
+          "type": "url",
+          "id": "video",
+          "label": "Video URL (MP4, YouTube or Vimeo)"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Media Strip",
+      "blocks": [
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" }
+      ]
+    }
+  ]
+}
+{% endschema %}

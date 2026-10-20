@@ -1,49 +1,45 @@
 {%- comment -%}
-  Mega-menu flyout snippet.
-  Usage: {% render 'mega-menu', menu_item: linklists.main-menu.links[0] %}
+  Simple dropdown menu using Shopify navigation.
+  Multi-column with max 6 items per column.
 {%- endcomment -%}
 
-{%- assign menu_id = menu_item.title | handle -%}
+{%- assign menu_id = index | default: '1' -%}
+{%- assign max_per_column = 6 -%}
+{%- assign total_items = menu.size -%}
+{%- assign columns_count = total_items | divided_by: max_per_column -%}
+{%- assign remainder = total_items | modulo: max_per_column -%}
+{%- if remainder > 0 -%}
+  {%- assign columns_count = columns_count | plus: 1 -%}
+{%- endif -%}
 
+{%- if menu and menu.size > 0 -%}
 <div
   data-mega-menu="{{ menu_id }}"
   aria-hidden="true"
   class="
-    absolute top-full left-0 right-0 z-30
-    bg-[#0a0a0a] border-t border-[#2a2a2a]
+    mega-menu-panel fixed left-0 right-0 z-50
+    border-t border-white/10
     opacity-0 aria-[hidden=false]:opacity-100
     pointer-events-none
     transition-opacity duration-200
-    px-8 py-8
   "
-  style="pointer-events: none;"
+  style="top: calc(var(--header-h, 140px) - 8px);"
 >
-  <div class="max-w-[1920px] mx-auto grid grid-cols-4 gap-8">
-    {%- for child_link in menu_item.links -%}
-      <div>
-        <p class="text-xs tracking-widest uppercase text-[#6b6b6b] mb-4">{{ child_link.title }}</p>
-        {%- if child_link.links.size > 0 -%}
-          <ul class="flex flex-col gap-2">
-            {%- for grandchild in child_link.links -%}
-              <li>
-                <a
-                  href="{{ grandchild.url }}"
-                  class="text-sm text-[#fafafa] hover:text-[#c9a96e] transition-colors duration-200"
-                >
-                  {{ grandchild.title }}
-                </a>
-              </li>
-            {%- endfor -%}
-          </ul>
-        {%- else -%}
-          <a
-            href="{{ child_link.url }}"
-            class="text-sm text-[#fafafa] hover:text-[#c9a96e] transition-colors duration-200"
-          >
-            {{ child_link.title }}
-          </a>
-        {%- endif -%}
-      </div>
-    {%- endfor -%}
+  <div class="max-w-[1920px] mx-auto px-6 lg:px-10 py-8">
+    <div class="grid grid-cols-{{ columns_count }} gap-12">
+      {%- for column_index in (1..columns_count) -%}
+        <ul class="flex flex-col gap-3">
+          {%- assign start_index = column_index | minus: 1 | times: max_per_column -%}
+          {%- for link in menu limit: max_per_column offset: start_index -%}
+            <li>
+              <a href="{{ link.url }}" class="text-sm text-white/95 hover:text-[#c9a96e] transition-colors duration-200">
+                {{ link.title }}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endfor -%}
+    </div>
   </div>
 </div>
+{%- endif -%}
