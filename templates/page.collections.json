@@ -1,0 +1,25 @@
+{
+  "sections": {
+    "collections": {
+      "type": "collections",
+      "blocks": {
+        "collection-1": {
+          "type": "collection",
+          "settings": {
+            "season_label": "ARCHIVE / FW25"
+          }
+        }
+      },
+      "block_order": [
+        "collection-1"
+      ],
+      "settings": {
+        "banner_height": 100,
+        "banner_overlay": 10
+      }
+    }
+  },
+  "order": [
+    "collections"
+  ]
+}

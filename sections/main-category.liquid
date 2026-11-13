@@ -1,36 +1,19 @@
 {%- liquid
-  assign type_filter = page.handle | split: '/' | last
-  assign products_per_page = 12
-
-  # Convert handle to match product type format (e.g., new-chapter → NEW CHAPTER)
-  assign type_filter_formatted = type_filter | replace: '-', ' ' | upcase
-
-  # Check if any products have this type
-  assign has_products = false
-  for product in collections.all.products
-    if product.type == type_filter_formatted
-      assign has_products = true
-      break
-    endif
-  endfor
-
-  if has_products
-    assign show_type = type_filter_formatted
-    assign page_title = type_filter_formatted
-  else
-    assign show_all = true
-    assign page_title = page.title
+  assign type_filter = page.handle | split: '/' | last | replace: '-', ' ' | upcase
+  if page.handle == 'gems-stones'
+    assign type_filter = 'GEMS & STONES'
   endif
+  assign type_url = type_filter | url_for_type
 -%}
 
-<section class="py-16 px-6 lg:px-10 max-w-[1920px] mx-auto bg-white">
+<section class="py-16 px-6 lg:px-10 max-w-[1920px] mx-auto bg-white" data-category-url="{{ type_url | escape }}" data-page-size="{{ section.settings.products_per_page }}">
   {%- comment -%} Category header {%- endcomment -%}
   <div class="flex justify-between items-center mb-10">
     <div>
-      <h1 class="font-display text-5xl md:text-6xl font-light mb-2 text-[#111] uppercase">{{ page_title }}</h1>
+      <h1 class="font-display text-5xl md:text-6xl font-light mb-2 text-[#111] uppercase">{{ page.title }}</h1>
     </div>
     <div class="flex items-center gap-6">
-      <p class="text-[#6b6b6b] text-sm tracking-[0.08em] uppercase" data-product-count>0 PRODUCTS</p>
+      <p class="text-[#6b6b6b] text-sm tracking-[0.08em] uppercase" data-product-count>Loading products...</p>
       <button data-filter-toggle class="flex items-center gap-2 px-4 py-2 border border-[#c9a96e] text-xs tracking-widest uppercase text-[#c9a96e] hover:bg-[#c9a96e] hover:text-white transition-colors duration-200">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
           <line x1="8" y1="3" x2="8" y2="13"/>
@@ -75,52 +58,14 @@
     </div>
   </div>
 
-  {%- comment -%} Product grid {%- endcomment -%}
-  <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6 mb-12" data-product-grid>
-    {%- assign visible_count = 0 -%}
-    {%- for product in collections.all.products -%}
-      {%- if show_type and product.type == show_type -%}
-        {%- assign visible_count = visible_count | plus: 1 -%}
-        {%- assign card_lazy = true -%}
-        {%- if forloop.index <= 4 -%}{%- assign card_lazy = false -%}{%- endif -%}
-        <li data-material="{{ product.tags | first | default: 'all' }}" class="{% if visible_count > products_per_page %}load-more-hidden{% endif %}" style="{% if visible_count > products_per_page %}display:none;{% endif %}">{% render 'product-card', product: product, lazy: card_lazy %}</li>
-      {%- elsif show_all -%}
-        {%- assign visible_count = visible_count | plus: 1 -%}
-        {%- assign card_lazy = true -%}
-        {%- if forloop.index <= 4 -%}{%- assign card_lazy = false -%}{%- endif -%}
-        <li data-material="{{ product.tags | first | default: 'all' }}" class="{% if visible_count > products_per_page %}load-more-hidden{% endif %}" style="{% if visible_count > products_per_page %}display:none;{% endif %}">{% render 'product-card', product: product, lazy: card_lazy %}</li>
-      {%- endif -%}
-    {%- endfor -%}
+  <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6 mb-12" data-product-grid aria-live="polite"></ul>
 
-    {%- if visible_count == 0 -%}
-      <li class="col-span-full text-center text-[#6b6b6b] py-20">No products found in this category.</li>
-    {%- endif -%}
-  </ul>
-
-  {%- comment -%} Load More button {%- endcomment -%}
-  {%- if visible_count > products_per_page -%}
-    <div class="text-center">
-      <button data-load-more class="load-more-btn px-8 py-3 border border-[#2a2a2a] text-xs tracking-widest uppercase text-[#111] hover:bg-[#111] hover:text-white transition-colors duration-200">
-        Load More
-      </button>
-    </div>
-  {%- endif -%}
+  <div class="text-center">
+    <button data-load-more hidden class="load-more-btn px-8 py-3 border border-[#2a2a2a] text-xs tracking-widest uppercase text-[#111] hover:bg-[#111] hover:text-white transition-colors duration-200">
+      Load More
+    </button>
+  </div>
 </section>
-
-<script>
-  (function() {
-    const countEl = document.querySelector('[data-product-count]');
-    const grid = document.querySelector('[data-product-grid]');
-    if (countEl && grid) {
-      const updateCount = () => {
-        const count = Array.from(grid.querySelectorAll('li')).filter(li => li.style.display !== 'none').length;
-        countEl.textContent = count + ' PRODUCTS';
-      };
-      updateCount();
-      grid.addEventListener('DOMSubtreeModified', updateCount);
-    }
-  })();
-</script>
 
 {% schema %}
 {

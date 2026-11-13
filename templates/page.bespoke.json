@@ -1,0 +1,70 @@
+{
+  "sections": {
+    "bespoke": {
+      "type": "bespoke",
+      "blocks": {
+        "heading-1": {
+          "type": "heading",
+          "settings": {
+            "heading": "Bespoke"
+          }
+        },
+        "para-1": {
+          "type": "paragraph",
+          "settings": {
+            "body": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>"
+          }
+        },
+        "band-1": {
+          "type": "media_band",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=pZ8HAi-bcRE&t=1s",
+            "height": 810
+          }
+        },
+        "para-2": {
+          "type": "paragraph",
+          "settings": {
+            "body": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>"
+          }
+        },
+        "row-1": {
+          "type": "media_row",
+          "settings": {
+            "video_url_2": "https://www.youtube.com/watch?v=pZ8HAi-bcRE&t=1s"
+          }
+        },
+        "para-3": {
+          "type": "paragraph",
+          "settings": {
+            "body": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>"
+          }
+        },
+        "appointment-1": {
+          "type": "appointment",
+          "settings": {
+            "heading": "Book an appointment",
+            "body": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit.</p>",
+            "cta_label": "Select a Date & Time"
+          }
+        }
+      },
+      "block_order": [
+        "heading-1",
+        "para-1",
+        "band-1",
+        "para-2",
+        "row-1",
+        "para-3",
+        "appointment-1"
+      ],
+      "settings": {
+        "banner_height": 75,
+        "overlay_opacity": 10
+      }
+    }
+  },
+  "order": [
+    "bespoke"
+  ]
+}

@@ -1,0 +1,112 @@
+{%- comment -%}
+  Main Article — editorial lookbook page.
+  Two-column collage driven by article metafields (in priority order):
+    custom.gallery_mixed → mixed reference list — images, video files, etc. in order
+    custom.media    → list of URLs (YouTube/Vimeo/mp4/image CDN links), merged before gallery
+    custom.gallery  → list of files (fallback / appended after custom.media)
+    custom.logo     → image shown at the top of the info panel
+    custom.credits  → multi-line text shown at the bottom of the info panel
+    custom.subtitle → season line under the title
+  Left column: first media item, then the info panel (logo + content + credits).
+  Right column: remaining media in a 1-2-1 grid (wide, 2 halves, wide…).
+  Falls back to featured image + content when neither list is set.
+{%- endcomment -%}
+
+{%- assign items = article.metafields.custom.gallery_mixed.value -%}
+{%- assign media = article.metafields.custom.media.value -%}
+{%- assign gallery = article.metafields.custom.gallery.value -%}
+{%- assign logo = article.metafields.custom.logo.value -%}
+{%- assign credits = article.metafields.custom.credits.value -%}
+
+{%- if items == blank -%}
+  {%- assign items = media -%}
+{%- endif -%}
+{%- if items == blank -%}
+  {%- assign items = gallery -%}
+{%- elsif gallery != blank -%}
+  {%- assign items = items | concat: gallery -%}
+{%- endif -%}
+
+{%- assign has_panel = false -%}
+{%- if logo != blank or credits != blank or article.content != blank -%}
+  {%- assign has_panel = true -%}
+{%- endif -%}
+
+<article class="bg-white text-ink">
+  <h1 class="sr-only">{{ article.title }}</h1>
+
+  {%- if items != blank and items.size > 0 -%}
+    <div class="md:flex">
+      {%- comment -%} Left column — first media item, then info panel {%- endcomment -%}
+      <div class="w-full md:w-2/5 flex flex-col">
+        {%- for item in items limit: 1 -%}
+          <div class="relative w-full aspect-[4/5] md:aspect-auto md:h-[55vh] overflow-hidden">
+            {%- render 'article-media', item: item, alt: article.title -%}
+          </div>
+        {%- endfor -%}
+
+        {%- if has_panel -%}
+          {%- render 'article-info-panel', logo: logo, credits: credits, article: article -%}
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Right column — 1-2-1 media grid {%- endcomment -%}
+      <div class="w-full md:w-3/5 flex flex-wrap content-start">
+        {%- for item in items offset: 1 limit: 1 -%}
+          <div class="relative w-full aspect-[4/5] md:aspect-auto md:h-[55vh] overflow-hidden">
+            {%- render 'article-media', item: item, alt: article.title -%}
+          </div>
+        {%- endfor -%}
+
+        {%- for item in items offset: 2 limit: 2 -%}
+          <div class="relative w-full md:w-1/2 md:grow aspect-[4/5] md:aspect-auto md:h-[62vh] overflow-hidden">
+            {%- render 'article-media', item: item, alt: article.title -%}
+          </div>
+        {%- endfor -%}
+
+        {%- for item in items offset: 4 -%}
+          <div class="relative w-full aspect-[4/5] md:aspect-auto md:h-[55vh] overflow-hidden">
+            {%- render 'article-media', item: item, alt: article.title -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- else -%}
+    <div class="max-w-[1400px] mx-auto px-6 lg:px-16 pb-16 lg:pb-24">
+      {%- if article.image != blank -%}
+        <figure class="mb-12 lg:mb-16">
+          <img
+            src="{{ article.image | image_url: width: 1600 }}"
+            srcset="
+              {{ article.image | image_url: width: 800 }} 800w,
+              {{ article.image | image_url: width: 1200 }} 1200w,
+              {{ article.image | image_url: width: 1600 }} 1600w
+            "
+            sizes="(min-width: 1400px) 1400px, 100vw"
+            width="{{ article.image.width }}"
+            height="{{ article.image.height }}"
+            alt="{{ article.image.alt | escape | default: article.title | escape }}"
+            class="w-full h-auto"
+          >
+        </figure>
+      {%- endif -%}
+
+      <div class="max-w-3xl mx-auto font-acumin text-xl leading-6 tracking-wider font-extralight text-ink space-y-6">
+        {{ article.content }}
+      </div>
+
+      {%- if credits != blank -%}
+        <div class="max-w-3xl mx-auto mt-12 font-acumin text-sm leading-6 font-light text-mid">
+          {{ credits | newline_to_br }}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</article>
+
+{% schema %}
+{
+  "name": "Article",
+  "settings": []
+}
+{% endschema %}

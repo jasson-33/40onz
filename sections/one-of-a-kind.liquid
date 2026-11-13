@@ -1,0 +1,295 @@
+{%- comment -%}
+  One of a Kind — scrapbook collage page.
+  Journal image (left, 71%) is overlapped by the right column
+  (43%, -14% margin) which stacks 'media' / 'names' / 'media_row' blocks.
+{%- endcomment -%}
+
+<section class="bg-white text-ink px-6 lg:px-10 xl:px-16 pt-14 lg:pt-20 pb-16 lg:pb-24">
+  <div class="max-w-[1500px] mx-auto">
+
+    {%- comment -%} ── Header: title + intro ───────────────────────────── {%- endcomment -%}
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-6">
+      {%- if section.settings.heading != blank -%}
+        <h1 class="md:col-span-5 font-acumin text-3xl font-light uppercase tracking-[0.35em] leading-9 text-ash">
+          {{ section.settings.heading }}
+        </h1>
+      {%- endif -%}
+      {%- if section.settings.intro != blank -%}
+        <div class="md:col-span-5 md:col-start-8 font-plex-mono text-xl leading-6 tracking-wider text-ink">
+          {{ section.settings.intro }}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ── Collage ─────────────────────────────────────────── {%- endcomment -%}
+    <div class="relative md:flex md:items-start mt-10 lg:mt-14">
+
+      <div class="relative md:w-[71%] md:shrink-0">
+          {%- if section.settings.journal_image != blank -%}
+            <img
+              src="{{ section.settings.journal_image | image_url: width: 1400 }}"
+              srcset="
+                {{ section.settings.journal_image | image_url: width: 800 }} 800w,
+                {{ section.settings.journal_image | image_url: width: 1100 }} 1100w,
+                {{ section.settings.journal_image | image_url: width: 1400 }} 1400w
+              "
+              sizes="(min-width: 1024px) 55vw, 90vw"
+              width="{{ section.settings.journal_image.width }}"
+              height="{{ section.settings.journal_image.height }}"
+              alt="{{ section.settings.journal_image.alt | escape | default: 'One of a kind journal' }}"
+              loading="eager"
+              class="w-full h-auto"
+            >
+          {%- elsif section.settings.journal_asset != blank -%}
+            <img
+              src="{{ section.settings.journal_asset | asset_url }}"
+              width="548"
+              height="621"
+              alt="One of a kind journal"
+              loading="eager"
+              class="w-full h-auto"
+            >
+          {%- elsif section.settings.journal_image_url != blank -%}
+            <img
+              src="{{ section.settings.journal_image_url }}"
+              width="548"
+              height="621"
+              alt="One of a kind journal"
+              loading="eager"
+              class="w-full h-auto"
+            >
+          {%- else -%}
+            {{ 'image' | placeholder_svg_tag: 'w-full aspect-[548/621]' }}
+          {%- endif -%}
+      </div>
+
+      {%- comment -%} Right column — overlaps journal's right page {%- endcomment -%}
+      <div class="relative z-10 flex flex-col gap-3 lg:gap-4 mt-10 md:mt-0 md:pt-5 md:w-[43%] md:-ml-[14%]">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+
+            {%- when 'media' -%}
+              {%- liquid
+                assign aspect_class = ''
+                assign is_natural = true
+                case block.settings.aspect
+                  when '1:1'
+                    assign aspect_class = ' aspect-square'
+                    assign is_natural = false
+                  when '4:5'
+                    assign aspect_class = ' aspect-[4/5]'
+                    assign is_natural = false
+                  when '3:4'
+                    assign aspect_class = ' aspect-[3/4]'
+                    assign is_natural = false
+                  when '9:16'
+                    assign aspect_class = ' aspect-[9/16]'
+                    assign is_natural = false
+                  when '16:9'
+                    assign aspect_class = ' aspect-video'
+                    assign is_natural = false
+                endcase
+              -%}
+              <div class="relative overflow-hidden{{ aspect_class }}" {{ block.shopify_attributes }}>
+                {%- render 'ambient-media',
+                  video: block.settings.video,
+                  video_url: block.settings.video_url,
+                  image: block.settings.image,
+                  asset: block.settings.asset,
+                  image_url: block.settings.image_url,
+                  alt: block.settings.alt,
+                  natural: is_natural
+                -%}
+              </div>
+
+            {%- when 'names' -%}
+              <div class="bg-stone-200 px-4 py-5 lg:py-6" {{ block.shopify_attributes }}>
+                <p class="font-aktiv text-[9px] lg:text-[10px] font-extralight uppercase tracking-[0.28em] leading-[2.1] text-ash text-center whitespace-pre-line">
+                  {{- block.settings.text -}}
+                </p>
+              </div>
+
+            {%- when 'media_row' -%}
+              <div class="grid grid-cols-3 gap-1" {{ block.shopify_attributes }}>
+                {%- for i in (1..3) -%}
+                  {%- assign video_key = 'video_' | append: i -%}
+                  {%- assign video_url_key = 'video_url_' | append: i -%}
+                  {%- assign image_key = 'image_' | append: i -%}
+                  {%- assign asset_key = 'asset_' | append: i -%}
+                  {%- assign image_url_key = 'image_url_' | append: i -%}
+                  <div class="relative overflow-hidden aspect-[9/16]">
+                    {%- render 'ambient-media',
+                      video: block.settings[video_key],
+                      video_url: block.settings[video_url_key],
+                      image: block.settings[image_key],
+                      asset: block.settings[asset_key],
+                      image_url: block.settings[image_url_key],
+                      alt: 'Workshop'
+                    -%}
+                  </div>
+                {%- endfor -%}
+              </div>
+
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Body — bottom-left, under the journal {%- endcomment -%}
+      {%- if section.settings.body != blank -%}
+        <div class="md:absolute md:left-0 md:bottom-0 md:w-[45%] font-plex-mono text-xl leading-6 tracking-wider text-ink pt-14">
+          {{ section.settings.body }}
+        </div>
+      {%- endif -%}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "One of a Kind",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "One of a kind"
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "Intro (top right)",
+      "default": "<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Body (bottom left)",
+      "default": "<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Journal"
+    },
+    {
+      "type": "image_picker",
+      "id": "journal_image",
+      "label": "Journal image"
+    },
+    {
+      "type": "text",
+      "id": "journal_asset",
+      "label": "Theme asset filename",
+      "info": "e.g. one-of-a-kind-journal.png — served from assets/ via asset_url"
+    },
+    {
+      "type": "url",
+      "id": "journal_image_url",
+      "label": "Image URL (fallback)"
+    },
+  ],
+  "blocks": [
+    {
+      "type": "media",
+      "name": "Media",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video",
+          "info": "Shopify-hosted video. Takes priority over video URL and image."
+        },
+        {
+          "type": "video_url",
+          "id": "video_url",
+          "label": "Video URL",
+          "accept": ["youtube", "vimeo"]
+        },
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        {
+          "type": "text",
+          "id": "asset",
+          "label": "Theme asset filename",
+          "info": "e.g. one-of-a-kind-sketches.jpg — served from assets/ via asset_url"
+        },
+        { "type": "url", "id": "image_url", "label": "Image URL (fallback)" },
+        { "type": "text", "id": "alt", "label": "Alt text" },
+        {
+          "type": "select",
+          "id": "aspect",
+          "label": "Aspect ratio",
+          "options": [
+            { "value": "natural", "label": "Natural" },
+            { "value": "1:1", "label": "1:1" },
+            { "value": "4:5", "label": "4:5" },
+            { "value": "3:4", "label": "3:4" },
+            { "value": "9:16", "label": "9:16" },
+            { "value": "16:9", "label": "16:9" }
+          ],
+          "default": "natural",
+          "info": "Fixed ratio crops media; Natural keeps intrinsic height (iframes fall back to 16:9)."
+        }
+      ]
+    },
+    {
+      "type": "names",
+      "name": "Names band",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Names (one line per row)",
+          "default": "SHY · PATTERN · ENFILADE · INCISION SAPPH · INCISION ONX · NOVELTY · SCHAFFINO\nLOPSIDED · VESTIGE · SOLILOQUY · FPLAB · FPSAPP · RESTART AMAT"
+        }
+      ]
+    },
+    {
+      "type": "media_row",
+      "name": "Media row (3-up)",
+      "settings": [
+        { "type": "video", "id": "video_1", "label": "Video 1" },
+        {
+          "type": "video_url",
+          "id": "video_url_1",
+          "label": "Video URL 1",
+          "accept": ["youtube", "vimeo"]
+        },
+        { "type": "image_picker", "id": "image_1", "label": "Image 1" },
+        { "type": "text", "id": "asset_1", "label": "Asset filename 1" },
+        { "type": "url", "id": "image_url_1", "label": "Image URL 1 (fallback)" },
+        { "type": "video", "id": "video_2", "label": "Video 2" },
+        {
+          "type": "video_url",
+          "id": "video_url_2",
+          "label": "Video URL 2",
+          "accept": ["youtube", "vimeo"]
+        },
+        { "type": "image_picker", "id": "image_2", "label": "Image 2" },
+        { "type": "text", "id": "asset_2", "label": "Asset filename 2" },
+        { "type": "url", "id": "image_url_2", "label": "Image URL 2 (fallback)" },
+        { "type": "video", "id": "video_3", "label": "Video 3" },
+        {
+          "type": "video_url",
+          "id": "video_url_3",
+          "label": "Video URL 3",
+          "accept": ["youtube", "vimeo"]
+        },
+        { "type": "image_picker", "id": "image_3", "label": "Image 3" },
+        { "type": "text", "id": "asset_3", "label": "Asset filename 3" },
+        { "type": "url", "id": "image_url_3", "label": "Image URL 3 (fallback)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "One of a Kind",
+      "blocks": [
+        { "type": "media" },
+        { "type": "names" },
+        { "type": "media_row" },
+        { "type": "media" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -14,7 +14,7 @@
           <p class="text-xs tracking-[0.3em] uppercase text-[#c9a96e] mb-2">{{ section.settings.eyebrow }}</p>
         {%- endif -%}
         {%- if section.settings.title != blank -%}
-          <h2 class="font-display text-4xl md:text-5xl font-light">{{ section.settings.title }}</h2>
+          <h2 class="font-acumin text-xl leading-6 tracking-wider [font-weight:194.29]">{{ section.settings.title }}</h2>
         {%- endif -%}
       </div>
       {%- if collection.url and section.settings.show_view_all -%}
@@ -28,93 +28,9 @@
     </div>
   {%- endif -%}
 
-  {%- comment -%} Tab filter {%- endcomment -%}
-  {%- if section.blocks.size > 0 -%}
-    <div data-tab-group class="mb-8">
-      <div class="flex gap-6 md:gap-10">
-        {%- for block in section.blocks -%}
-          <button
-            data-tab="{{ block.settings.filter_tag | handle | default: 'all' }}"
-            aria-selected="false"
-            class="tab-filter text-3xl md:text-4xl font-light tracking-[0.04em] uppercase pb-3 aria-selected:text-[#111] text-[#b7b7b7] hover:text-[#111] transition-colors duration-200 whitespace-nowrap"
-            {{ block.shopify_attributes }}
-          >
-            {{ block.settings.label }}
-          </button>
-        {%- endfor -%}
-      </div>
-
-      <div class="group/products relative">
-        {%- for block in section.blocks -%}
-          {%- liquid
-            assign tab_id = block.settings.filter_tag | handle | default: 'all'
-            assign filter_value = block.settings.filter_tag | strip | downcase
-            assign matched_count = 0
-          -%}
-          <div
-            data-tab-panel="{{ tab_id }}"
-            aria-hidden="true"
-            class="pt-8"
-          >
-            <ul data-products-track class="flex gap-4 lg:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {%- for product in collection.products -%}
-                {%- liquid
-                  assign product_tags = product.tags | join: '|' | downcase
-                  assign show_product = false
-                  if filter_value == blank or filter_value == 'all'
-                    assign show_product = true
-                  elsif product_tags contains filter_value
-                    assign show_product = true
-                  endif
-                -%}
-                {%- if show_product and matched_count < product_limit -%}
-                  {%- assign matched_count = matched_count | plus: 1 -%}
-                  {%- assign card_lazy = true -%}
-                  {%- if matched_count <= 2 -%}{%- assign card_lazy = false -%}{%- endif -%}
-                  <li class="shrink-0 snap-start w-[68vw] sm:w-[44vw] lg:w-[28vw] xl:w-[22vw]">{% render 'product-card', product: product, lazy: card_lazy %}</li>
-                {%- endif -%}
-              {%- endfor -%}
-              {%- if matched_count == 0 -%}
-                <li class="w-full py-16 text-center">
-                  <p class="text-sm tracking-[0.15em] uppercase text-[#9e9e9e]">
-                    {%- if collection == blank -%}
-                      No collection selected — choose one in the theme editor
-                    {%- else -%}
-                      No products in this filter yet
-                    {%- endif -%}
-                  </p>
-                </li>
-              {%- endif -%}
-            </ul>
-          </div>
-        {%- endfor -%}
-
-        {%- comment -%} Overlay arrows — centered on the row, appear on hover {%- endcomment -%}
-        <button
-          data-products-prev
-          type="button"
-          aria-label="Previous products"
-          class="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-[#111]/70 hover:text-[#111] transition-all duration-200 hidden md:block opacity-0 group-hover/products:opacity-100"
-        >
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M15 4l-8 8 8 8"/>
-          </svg>
-        </button>
-        <button
-          data-products-next
-          type="button"
-          aria-label="Next products"
-          class="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-[#111]/70 hover:text-[#111] transition-all duration-200 hidden md:block opacity-0 group-hover/products:opacity-100"
-        >
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 4l8 8-8 8"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  {%- else -%}
-    {%- comment -%} No tabs — single horizontal product row {%- endcomment -%}
-    <ul data-products-track class="flex gap-4 lg:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2">
+  {%- comment -%} Horizontal product row with overlay arrows {%- endcomment -%}
+  <div class="group/products relative" data-products-row>
+    <ul data-products-track class="flex gap-4 lg:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {%- for product in products limit: product_limit -%}
         {%- assign card_lazy = true -%}
         {%- if forloop.index <= 2 -%}{%- assign card_lazy = false -%}{%- endif -%}
@@ -131,7 +47,29 @@
         </li>
       {%- endfor -%}
     </ul>
-  {%- endif -%}
+
+    {%- comment -%} Overlay arrows — centered on the row, appear on hover {%- endcomment -%}
+    <button
+      data-products-prev
+      type="button"
+      aria-label="Previous products"
+      class="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-[#111]/70 hover:text-[#111] transition-all duration-200 hidden md:block opacity-0 group-hover/products:opacity-100"
+    >
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 4l-8 8 8 8"/>
+      </svg>
+    </button>
+    <button
+      data-products-next
+      type="button"
+      aria-label="Next products"
+      class="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-[#111]/70 hover:text-[#111] transition-all duration-200 hidden md:block opacity-0 group-hover/products:opacity-100"
+    >
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 4l8 8-8 8"/>
+      </svg>
+    </button>
+  </div>
 </section>
 
 {% schema %}
@@ -171,37 +109,12 @@
       "default": true
     }
   ],
-  "blocks": [
-    {
-      "type": "filter_tab",
-      "name": "Filter Tab",
-      "settings": [
-        {
-          "type": "text",
-          "id": "label",
-          "label": "Label",
-          "default": "All"
-        },
-        {
-          "type": "text",
-          "id": "filter_tag",
-          "label": "Tag to filter by (leave blank for all)"
-        }
-      ]
-    }
-  ],
   "presets": [
     {
       "name": "Featured Collection",
       "settings": {
         "title": "New Arrivals"
-      },
-      "blocks": [
-        { "type": "filter_tab", "settings": { "label": "All" } },
-        { "type": "filter_tab", "settings": { "label": "Silver", "filter_tag": "silver" } },
-        { "type": "filter_tab", "settings": { "label": "Gold", "filter_tag": "gold" } },
-        { "type": "filter_tab", "settings": { "label": "Bronze", "filter_tag": "bronze" } }
-      ]
+      }
     }
   ]
 }

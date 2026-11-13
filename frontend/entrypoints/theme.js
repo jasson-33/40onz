@@ -201,8 +201,8 @@ async function refreshCart() {
 }
 
 // ── Product Card Image Swap ───────────────────────────────────────────
-function initImageSwap() {
-  document.querySelectorAll('[data-product-card]').forEach((card) => {
+function initImageSwap(root = document) {
+  root.querySelectorAll('[data-product-card]').forEach((card) => {
     const primary = card.querySelector('[data-img-primary]')
     const hover = card.querySelector('[data-img-hover]')
     if (!primary || !hover) return
@@ -287,46 +287,15 @@ function initMediaStrip() {
   })
 }
 
-// ── Collection Tab Filter ─────────────────────────────────────────────
-function initTabFilter() {
-  document.querySelectorAll('[data-tab-group]').forEach((group) => {
-    const tabs = group.querySelectorAll('[data-tab]')
-    const panels = group.querySelectorAll('[data-tab-panel]')
-
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const target = tab.getAttribute('data-tab')
-        tabs.forEach((t) => t.setAttribute('aria-selected', t === tab ? 'true' : 'false'))
-        panels.forEach((p) => {
-          const show = p.getAttribute('data-tab-panel') === target
-          p.setAttribute('aria-hidden', show ? 'false' : 'true')
-          p.style.display = show ? '' : 'none'
-          if (show) {
-            const track = p.querySelector('[data-products-track]')
-            track?.scrollTo({ left: 0, behavior: 'smooth' })
-          }
-        })
-      })
-    })
-
-    // Activate first tab
-    tabs[0]?.click()
-  })
-}
-
 // ── Featured Products Horizontal Row ───────────────────────────────────
 function initProductRows() {
-  document.querySelectorAll('[data-tab-group]').forEach((group) => {
-    const prevBtn = group.querySelector('[data-products-prev]')
-    const nextBtn = group.querySelector('[data-products-next]')
-    if (!prevBtn || !nextBtn) return
-
-    const activeTrack = () =>
-      group.querySelector('[data-tab-panel][aria-hidden="false"] [data-products-track]')
+  document.querySelectorAll('[data-products-row]').forEach((row) => {
+    const track = row.querySelector('[data-products-track]')
+    const prevBtn = row.querySelector('[data-products-prev]')
+    const nextBtn = row.querySelector('[data-products-next]')
+    if (!track || !prevBtn || !nextBtn) return
 
     const scrollByCard = (dir) => {
-      const track = activeTrack()
-      if (!track) return
       const firstCard = track.querySelector('li')
       const step = firstCard ? firstCard.getBoundingClientRect().width + 24 : track.clientWidth * 0.8
       track.scrollBy({ left: dir * step, behavior: 'smooth' })
@@ -339,14 +308,71 @@ function initProductRows() {
 
 // ── Category Material Filter ─────────────────────────────────────────────
 function initCategoryFilter() {
+  const category = document.querySelector('[data-category-url]')
+  if (!category) return
   const filterToggle = document.querySelector('[data-filter-toggle]')
   const filterSidebar = document.querySelector('[data-filter-sidebar]')
   const filterClose = document.querySelector('[data-filter-close]')
   const filterPanel = filterSidebar?.querySelector('.filter-sidebar-panel')
   const checkboxes = document.querySelectorAll('[data-material-checkbox]')
   const grid = document.querySelector('[data-product-grid]')
-  
-  if (!filterToggle || !filterSidebar || !grid) return
+  const loadMoreBtn = category.querySelector('[data-load-more]')
+  const countEl = category.querySelector('[data-product-count]')
+  if (!filterToggle || !filterSidebar || !grid || !loadMoreBtn || !countEl) return
+
+  const pageSize = Number(category.dataset.pageSize) || 12
+  let nextUrl = category.dataset.categoryUrl
+  let pending = []
+  let total = 0
+  let loading = false
+  const selectedMaterials = () => Array.from(checkboxes)
+    .filter((cb) => cb.checked && cb.dataset.materialCheckbox !== 'all')
+    .map((cb) => cb.dataset.materialCheckbox)
+
+  const updateView = () => {
+    const materials = selectedMaterials()
+    grid.querySelectorAll('li[data-material]').forEach((item) => {
+      item.hidden = materials.length > 0 &&
+        !item.dataset.material.split(',').some((tag) => materials.includes(tag.trim().toLowerCase()))
+    })
+    const visible = grid.querySelectorAll('li[data-material]:not([hidden])').length
+    countEl.textContent = `${materials.length ? visible : total} PRODUCTS`
+    loadMoreBtn.hidden = loading || (!pending.length && !nextUrl)
+  }
+
+  const fetchPage = async () => {
+    const response = await fetch(nextUrl)
+    if (!response.ok) throw new Error(`Category request failed: ${response.status}`)
+    const doc = new DOMParser().parseFromString(await response.text(), 'text/html')
+    const source = doc.querySelector('[data-collection-grid]')
+    if (!source) throw new Error('Category products grid not found')
+    total = Number(doc.querySelector('[data-collection-count]')?.dataset.collectionCount) || 0
+    pending.push(...Array.from(source.querySelectorAll('li[data-material]')))
+    const next = doc.querySelector('[data-collection-next]')
+    nextUrl = next ? new URL(next.getAttribute('href'), window.location.origin).href : null
+  }
+
+  const loadMore = async () => {
+    if (loading) return
+    loading = true
+    loadMoreBtn.hidden = true
+    try {
+      while (pending.length < pageSize && nextUrl) await fetchPage()
+      const items = pending.splice(0, pageSize)
+      if (items.length) grid.querySelector('li:not([data-material])')?.remove()
+      items.forEach((item) => grid.appendChild(item))
+      items.forEach((item) => initImageSwap(item))
+      if (!items.length) grid.innerHTML = '<li class="col-span-full text-center text-[#6b6b6b] py-20">No products found in this category.</li>'
+    } catch (error) {
+      console.error('[category]', error)
+      if (!grid.children.length) grid.innerHTML = '<li class="col-span-full text-center text-[#6b6b6b] py-20">Unable to load products. Please try again.</li>'
+    } finally {
+      loading = false
+      updateView()
+    }
+  }
+  loadMoreBtn.addEventListener('click', loadMore)
+  loadMore()
 
   filterToggle.addEventListener('click', (e) => {
     e.preventDefault()
@@ -381,8 +407,6 @@ function initCategoryFilter() {
   checkboxes.forEach((checkbox) => {
     checkbox.addEventListener('change', () => {
       const allCheckbox = document.querySelector('[data-material-checkbox="all"]')
-      const checked = Array.from(checkboxes).filter(cb => cb.checked && cb !== allCheckbox).map(cb => cb.getAttribute('data-material-checkbox'))
-
       if (checkbox === allCheckbox && checkbox.checked) {
         checkboxes.forEach(cb => {
           if (cb !== allCheckbox) cb.checked = false
@@ -391,55 +415,143 @@ function initCategoryFilter() {
         allCheckbox.checked = false
       }
 
-      const items = grid.querySelectorAll('li')
-      items.forEach((item) => {
-        const itemMaterial = item.getAttribute('data-material') || 'all'
-        const show = allCheckbox.checked || checked.length === 0 || checked.includes(itemMaterial)
-        item.style.display = show ? '' : 'none'
-      })
-      
-      const countEl = document.querySelector('[data-product-count]')
-      if (countEl) {
-        const visibleCount = Array.from(items).filter(li => li.style.display !== 'none').length
-        countEl.textContent = visibleCount + ' PRODUCTS'
-      }
+      updateView()
     })
   })
 }
 
-// ── Category Load More ─────────────────────────────────────────────────
-function initLoadMore() {
-  const loadMoreBtn = document.querySelector('[data-load-more]')
-  const grid = document.querySelector('[data-product-grid]')
-  if (!loadMoreBtn || !grid) return
+// ── OOAK Archive — sold/available filter + renumber ───────────────────
+function initOoakArchive() {
+  document.querySelectorAll('[data-ooak-archive]').forEach((archive) => {
+    const tabs = archive.querySelectorAll('[data-ooak-tab]')
+    const items = archive.querySelectorAll('li[data-availability]')
+    if (!tabs.length || !items.length) return
 
-  const productsPerPage = 12
-  let currentPage = 1
+    let active = null
 
-  loadMoreBtn.addEventListener('click', () => {
-    const hiddenItems = grid.querySelectorAll('.load-more-hidden')
-    if (hiddenItems.length === 0) {
-      loadMoreBtn.style.display = 'none'
-      return
+    const apply = () => {
+      let visible = 0
+      items.forEach((item) => {
+        const show = !active || item.dataset.availability === active
+        item.hidden = !show
+        if (show) {
+          visible += 1
+          const num = item.querySelector('[data-ooak-num]')
+          if (num) num.textContent = `${String(visible).padStart(2, '0')}.`
+        }
+      })
+      tabs.forEach((tab) => {
+        tab.setAttribute('aria-selected', tab.dataset.ooakTab === active ? 'true' : 'false')
+      })
     }
 
-    const currentMaterial = document.querySelector('[data-material-filter][aria-selected="true"]')?.getAttribute('data-material-filter') || 'all'
-    let shown = 0
-
-    hiddenItems.forEach((item) => {
-      if (shown >= productsPerPage) return
-      const itemMaterial = item.getAttribute('data-material') || 'all'
-      if (currentMaterial === 'all' || itemMaterial === currentMaterial) {
-        item.style.display = ''
-        item.classList.remove('load-more-hidden')
-        shown++
-      }
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        active = active === tab.dataset.ooakTab ? null : tab.dataset.ooakTab
+        apply()
+      })
     })
+  })
+}
 
-    currentPage++
-    const remaining = grid.querySelectorAll('.load-more-hidden').length
-    if (remaining === 0) {
-      loadMoreBtn.style.display = 'none'
+// ── Collections page — infinite scroll per unit ───────────────────────
+// Each [data-collections-unit] grid lazy-loads the next page of its
+// collection from /collections/<handle>?view=grid&page=N when the
+// sentinel scrolls into view, until the grid template drops data-grid-next.
+function initCollectionsInfinite() {
+  document.querySelectorAll('[data-collections-unit]').forEach((unit) => {
+    const sentinel = unit.querySelector('[data-unit-sentinel]')
+    const grid = unit.querySelector('[data-unit-grid]')
+    const collectionUrl = unit.dataset.collectionUrl
+    let nextPage = Number(unit.dataset.nextPage) || 2
+    if (!sentinel || !grid || !collectionUrl) return
+
+    let loading = false
+    let observer = null
+
+    const loadNext = async () => {
+      if (loading) return
+      loading = true
+      try {
+        const response = await fetch(`${collectionUrl}?view=grid&page=${nextPage}`)
+        if (!response.ok) throw new Error(`Grid request failed: ${response.status}`)
+        const doc = new DOMParser().parseFromString(await response.text(), 'text/html')
+        const items = doc.querySelectorAll('[data-collection-grid] > li')
+        items.forEach((item) => {
+          grid.appendChild(item)
+          initImageSwap(item)
+        })
+        nextPage += 1
+        if (!doc.querySelector('[data-grid-next]')) {
+          observer?.disconnect()
+          sentinel.remove()
+        }
+      } catch (error) {
+        console.error('[collections]', error)
+        observer?.disconnect()
+        const retry = document.createElement('button')
+        retry.type = 'button'
+        retry.textContent = 'Load More'
+        retry.className = 'block mx-auto mt-8 px-8 py-3 border border-[#2a2a2a] text-xs tracking-widest uppercase text-[#111] hover:bg-[#111] hover:text-white transition-colors duration-200'
+        retry.addEventListener('click', () => {
+          retry.remove()
+          watch()
+          loadNext()
+        })
+        sentinel.insertAdjacentElement('afterend', retry)
+      } finally {
+        loading = false
+      }
+    }
+
+    const watch = () => {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting)) loadNext()
+        },
+        { rootMargin: '600px' },
+      )
+      observer.observe(sentinel)
+    }
+    watch()
+  })
+}
+
+function initCollectionLoadMore() {
+  const collection = document.querySelector('[data-collection-count]')
+  const grid = collection?.querySelector('[data-collection-grid]')
+  if (!grid) return
+
+  collection.addEventListener('click', async (event) => {
+    const next = event.target.closest('[data-collection-next]')
+    if (!next) return
+    event.preventDefault()
+    if (next.dataset.loading) return
+    next.dataset.loading = 'true'
+    next.textContent = 'Loading...'
+
+    try {
+      const response = await fetch(next.href)
+      if (!response.ok) throw new Error(`Collection request failed: ${response.status}`)
+      const doc = new DOMParser().parseFromString(await response.text(), 'text/html')
+      const source = doc.querySelector('[data-collection-grid]')
+      if (!source) throw new Error('Collection grid not found')
+      source.querySelectorAll('li').forEach((item) => {
+        grid.appendChild(item)
+        initImageSwap(item)
+      })
+      const following = doc.querySelector('[data-collection-next]')
+      if (following) {
+        next.href = new URL(following.getAttribute('href'), window.location.origin).href
+        next.textContent = 'Load More'
+      } else {
+        next.remove()
+      }
+    } catch (error) {
+      console.error('[collection]', error)
+      next.textContent = 'Retry Load More'
+    } finally {
+      delete next.dataset.loading
     }
   })
 }
@@ -458,7 +570,10 @@ function initProductPage() {
       sizeChartDrawer.classList.remove('pointer-events-none')
       sizeChartPanel.classList.remove('translate-x-full')
       sizeChartPanel.classList.add('translate-x-0')
+      sizeChartDrawer.setAttribute('aria-hidden', 'false')
+      sizeChartOpenBtn.setAttribute('aria-expanded', 'true')
       document.body.style.overflow = 'hidden'
+      sizeChartCloseBtn.focus()
     }
 
     const closeSizeChart = () => {
@@ -466,7 +581,10 @@ function initProductPage() {
       sizeChartDrawer.classList.add('pointer-events-none')
       sizeChartPanel.classList.add('translate-x-full')
       sizeChartPanel.classList.remove('translate-x-0')
+      sizeChartDrawer.setAttribute('aria-hidden', 'true')
+      sizeChartOpenBtn.setAttribute('aria-expanded', 'false')
       document.body.style.overflow = ''
+      sizeChartOpenBtn.focus()
     }
 
     sizeChartOpenBtn.addEventListener('click', openSizeChart)
@@ -512,11 +630,11 @@ function initProductPage() {
   }
 
   // Variant selection
-  const variantButtons = document.querySelectorAll('[data-option-value]')
+  const optionSelects = document.querySelectorAll('[data-product-option]')
   const variantIdInput = document.querySelector('input[name="id"]')
   const skuDisplay = document.getElementById('product-sku')
 
-  if (variantButtons.length > 0 && variantIdInput) {
+  if (optionSelects.length > 0 && variantIdInput) {
     // Build variant map
     const productData = document.querySelector('[data-product-json]')
     let variants = []
@@ -528,39 +646,15 @@ function initProductPage() {
       }
     }
 
-    variantButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const optionIndex = parseInt(btn.getAttribute('data-option-index'), 10)
-        const optionValue = btn.getAttribute('data-option-value')
+    optionSelects.forEach((select) => {
+      select.addEventListener('change', () => {
+        const selectedOptions = Array.from(optionSelects, (option) => option.value)
+        const selectedDisplay = document.getElementById(`option-${Number(select.dataset.optionIndex) + 1}-selected`)
+        if (selectedDisplay) selectedDisplay.textContent = select.value
 
-        // Update button states
-        const sameOptionButtons = document.querySelectorAll(`[data-option-index="${optionIndex}"]`)
-        sameOptionButtons.forEach((b) => {
-          const isSelected = b.getAttribute('data-option-value') === optionValue
-          b.classList.toggle('bg-[#f5f5f5]', isSelected)
-          b.classList.toggle('text-[#111]', isSelected)
-          b.classList.toggle('text-[#6b6b6b]', !isSelected)
-        })
-
-        // Update selected value display
-        const selectedDisplay = document.getElementById(`option-${optionIndex + 1}-selected`)
-        if (selectedDisplay) {
-          selectedDisplay.textContent = optionValue
-        }
-
-        // Find matching variant
-        const selectedOptions = {}
-        document.querySelectorAll('[data-option-index]').forEach((b) => {
-          if (b.classList.contains('bg-[#f5f5f5]')) {
-            const idx = parseInt(b.getAttribute('data-option-index'), 10)
-            selectedOptions[idx] = b.getAttribute('data-option-value')
-          }
-        })
-
-        const matchingVariant = variants.find((v) => {
-          return v.options.every((opt, i) => opt === selectedOptions[i])
-        })
-
+        const matchingVariant = variants.find((variant) =>
+          variant.options.every((value, index) => value === selectedOptions[index]))
+        const addToCartBtn = document.querySelector('[data-add-to-cart] button')
         if (matchingVariant) {
           variantIdInput.value = matchingVariant.id
           if (skuDisplay) {
@@ -568,22 +662,21 @@ function initProductPage() {
           }
 
           // Update price
-          const priceEl = document.querySelector('.text-lg')
-          if (priceEl) {
-            const priceSpan = priceEl.querySelector('span:first-child')
-            if (priceSpan) {
-              priceSpan.textContent = new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-              }).format(matchingVariant.price / 100)
-            }
-          }
+          const priceSpan = document.querySelector('[data-product-price]')
+          if (priceSpan) priceSpan.textContent = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: window.Shopify?.currency?.active || 'USD',
+          }).format(matchingVariant.price / 100)
 
-          // Update button state
-          const addToCartBtn = document.querySelector('[data-add-to-cart] button')
           if (addToCartBtn) {
             addToCartBtn.disabled = !matchingVariant.available
             addToCartBtn.textContent = matchingVariant.available ? 'Choose Options' : 'Sold Out'
+          }
+        } else {
+          variantIdInput.value = ''
+          if (addToCartBtn) {
+            addToCartBtn.disabled = true
+            addToCartBtn.textContent = 'Unavailable'
           }
         }
       })
@@ -601,9 +694,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initHeaderScroll()
   initScrollReveal()
   initMediaStrip()
-  initTabFilter()
   initProductRows()
   initCategoryFilter()
-  initLoadMore()
+  initCollectionLoadMore()
+  initCollectionsInfinite()
+  initOoakArchive()
   initProductPage()
 })

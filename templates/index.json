@@ -14,25 +14,6 @@
     },
     "featured-collection": {
       "type": "featured-collection",
-      "blocks": {
-        "tab-all": {
-          "type": "filter_tab",
-          "settings": { "label": "All" }
-        },
-        "tab-silver": {
-          "type": "filter_tab",
-          "settings": { "label": "Silver", "filter_tag": "silver" }
-        },
-        "tab-gold": {
-          "type": "filter_tab",
-          "settings": { "label": "Gold", "filter_tag": "gold" }
-        },
-        "tab-bronze": {
-          "type": "filter_tab",
-          "settings": { "label": "Bronze", "filter_tag": "bronze" }
-        }
-      },
-      "block_order": ["tab-all", "tab-silver", "tab-gold", "tab-bronze"],
       "settings": {
         "eyebrow": "",
         "title": "From the latest chapter",

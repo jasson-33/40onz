@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "editorials": {
+      "type": "editorials",
+      "settings": {
+        "heading": "Editorials",
+        "blog": "editorials",
+        "collection_label": "Collection"
+      }
+    }
+  },
+  "order": [
+    "editorials"
+  ]
+}

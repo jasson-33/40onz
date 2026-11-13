@@ -1,0 +1,201 @@
+{%- comment -%}
+  Our Story — two-column editorial page.
+  Image blocks stack in the left column (polaroid frame),
+  text blocks stack in the right column.
+{%- endcomment -%}
+
+<section class="bg-white text-[#111] py-20 lg:py-28 px-6 lg:px-16">
+  <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+
+    {%- comment -%} Left column — images {%- endcomment -%}
+    <div class="flex flex-col gap-14 lg:gap-20">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'image' -%}
+          {%- assign rotation = block.settings.rotation | default: 0 -%}
+          {%- case block.settings.alignment -%}
+            {%- when 'start' -%}{%- assign align_class = 'self-start' -%}
+            {%- when 'end' -%}{%- assign align_class = 'self-end' -%}
+            {%- else -%}{%- assign align_class = 'self-center' -%}
+          {%- endcase -%}
+          {%- if block.settings.frame -%}
+            {%- assign frame_class = 'bg-white p-3 pb-10 shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-[#eee]' -%}
+          {%- else -%}
+            {%- assign frame_class = '' -%}
+          {%- endif -%}
+          <figure
+            class="{{ frame_class }} {{ align_class }}"
+            style="transform: rotate({{ rotation }}deg); max-width: {{ block.settings.width | default: 85 }}%;"
+            {{ block.shopify_attributes }}
+          >
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 1200 }}"
+                srcset="
+                  {{ block.settings.image | image_url: width: 600 }} 600w,
+                  {{ block.settings.image | image_url: width: 900 }} 900w,
+                  {{ block.settings.image | image_url: width: 1200 }} 1200w
+                "
+                sizes="(min-width: 1024px) 40vw, 90vw"
+                width="{{ block.settings.image.width }}"
+                height="{{ block.settings.image.height }}"
+                alt="{{ block.settings.image.alt | escape | default: block.settings.caption }}"
+                loading="lazy"
+                class="w-full h-auto"
+              >
+            {%- elsif block.settings.asset != blank -%}
+              <img
+                src="{{ block.settings.asset | asset_url }}"
+                width="837"
+                height="2597"
+                alt="{{ block.settings.caption | escape }}"
+                loading="lazy"
+                class="w-full h-auto"
+              >
+            {%- elsif block.settings.image_url != blank -%}
+              <img
+                src="{{ block.settings.image_url }}"
+                width="1200"
+                height="900"
+                alt="{{ block.settings.caption | escape }}"
+                loading="lazy"
+                class="w-full h-auto"
+              >
+            {%- else -%}
+              {{ 'image' | placeholder_svg_tag: 'w-full aspect-[4/3] bg-[#f0f0f0]' }}
+            {%- endif -%}
+            {%- if block.settings.caption != blank -%}
+              <figcaption class="mt-4 text-center font-display italic text-sm text-[#6b6b6b]">
+                {{ block.settings.caption }}
+              </figcaption>
+            {%- endif -%}
+          </figure>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} Right column — text {%- endcomment -%}
+    <div class="flex flex-col gap-14 lg:gap-20 lg:pt-4">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'text' -%}
+          <div {{ block.shopify_attributes }}>
+            {%- if block.settings.heading != blank -%}
+              <h2 class="font-acumin text-3xl uppercase text-ash mb-8 font-extralight leading-9">
+                {{ block.settings.heading }}
+              </h2>
+            {%- endif -%}
+            {%- if block.settings.body != blank -%}
+              <div class="font-acumin text-xl leading-6 tracking-wider font-extralight text-ink space-y-6">
+                {{ block.settings.body }}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Our Story",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "asset",
+          "label": "Theme asset filename",
+          "info": "e.g. our-story-collage.jpg — served from assets/ via asset_url"
+        },
+        {
+          "type": "url",
+          "id": "image_url",
+          "label": "Image URL (fallback)"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption"
+        },
+        {
+          "type": "range",
+          "id": "rotation",
+          "min": -6,
+          "max": 6,
+          "step": 0.5,
+          "unit": "deg",
+          "label": "Tilt",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "width",
+          "min": 50,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "label": "Width",
+          "default": 85
+        },
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "Alignment",
+          "options": [
+            { "value": "start", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "end", "label": "Right" }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "checkbox",
+          "id": "frame",
+          "label": "Polaroid frame",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text block",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Our Story"
+        },
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "Body",
+          "default": "<p>Tell the story of the house — its origins, its craft, its obsessions.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Our Story",
+      "blocks": [
+        { "type": "image", "settings": { "rotation": -1.5, "alignment": "end" } },
+        { "type": "text" },
+        { "type": "image", "settings": { "rotation": 1, "alignment": "start", "width": 75 } },
+        { "type": "text", "settings": { "heading": "" } },
+        { "type": "image", "settings": { "rotation": -0.5, "alignment": "center" } },
+        { "type": "text", "settings": { "heading": "" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

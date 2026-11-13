@@ -1,0 +1,122 @@
+{%- comment -%}
+  Renders one article-mosaic media cell. Accepts:
+    item — media object (gallery file), URL string (custom.media entry),
+           or metaobject entry (gallery_mixed) with fields like
+           video / url / image — video wins when several are set.
+    alt  — fallback alt/title text
+    natural — when true, media keeps intrinsic aspect (flow height)
+              instead of absolute-covering a fixed frame
+{%- endcomment -%}
+
+{%- liquid
+  assign frame = 'absolute inset-0 w-full h-full object-cover'
+  assign frame_video = 'absolute top-0 left-1/2 h-full aspect-video -translate-x-1/2 pointer-events-none'
+  if natural
+    assign frame = 'w-full h-auto'
+    assign frame_video = 'w-full aspect-video pointer-events-none'
+  endif
+-%}
+
+{%- liquid
+  assign vid = ''
+  assign url = ''
+  assign img = ''
+
+  if item.media_type == 'video'
+    assign vid = item
+  elsif item.media_type == 'image'
+    assign img = item
+  elsif item != blank
+    assign vid = item.video.value | default: item.video_file.value | default: item.media_video.value
+    assign url = item.url.value | default: item.video_url.value | default: item.link.value
+    assign img = item.image.value | default: item.image_file.value | default: item.file.value
+    if vid == blank and url == blank and img == blank
+      assign url = item.url | default: item
+    endif
+  endif
+
+  assign yt_id = ''
+  assign vimeo_id = ''
+  assign mp4_url = ''
+  assign img_url = ''
+  if url != blank
+    assign u = url | strip
+    if u contains '.mp4' or u contains '.mov'
+      assign mp4_url = u
+    elsif u contains 'youtu.be/'
+      assign yt_id = u | split: 'youtu.be/' | last | split: '?' | first | split: '&' | first
+    elsif u contains 'watch?v='
+      assign yt_id = u | split: 'watch?v=' | last | split: '&' | first
+    elsif u contains 'youtube.com/embed/'
+      assign yt_id = u | split: 'embed/' | last | split: '?' | first
+    elsif u contains 'youtube.com/shorts/'
+      assign yt_id = u | split: 'shorts/' | last | split: '?' | first
+    elsif u contains 'vimeo.com/'
+      assign vimeo_id = u | split: 'vimeo.com/' | last | split: '?' | first
+    else
+      assign img_url = u
+    endif
+  endif
+-%}
+
+{%- if vid != blank -%}
+  <video
+    autoplay muted loop playsinline
+    {%- if vid.preview_image -%}
+      poster="{{ vid.preview_image | image_url: width: 1200 }}"
+    {%- endif -%}
+    class="{{ frame }}"
+  >
+    {%- for source in vid.sources -%}
+      <source src="{{ source.url }}" type="{{ source.mime_type }}">
+    {%- endfor -%}
+  </video>
+{%- elsif yt_id != blank -%}
+  <iframe
+    src="https://www.youtube.com/embed/{{ yt_id }}?autoplay=1&mute=1&loop=1&playlist={{ yt_id }}&controls=0&modestbranding=1&playsinline=1&rel=0&fs=0&disablekb=1&iv_load_policy=3&enablejsapi=1"
+    class="{{ frame_video }}"
+    allow="autoplay; encrypted-media"
+    allowfullscreen
+    title="{{ alt | escape | default: 'Editorial video' }}"
+  ></iframe>
+{%- elsif vimeo_id != blank -%}
+  <iframe
+    src="https://player.vimeo.com/video/{{ vimeo_id }}?autoplay=1&muted=1&loop=1&background=1&byline=0&title=0&portrait=0"
+    class="{{ frame_video }}"
+    allow="autoplay; fullscreen"
+    title="{{ alt | escape | default: 'Editorial video' }}"
+  ></iframe>
+{%- elsif mp4_url != blank -%}
+  <video src="{{ mp4_url }}" autoplay muted loop playsinline class="{{ frame }}"></video>
+{%- elsif img != blank -%}
+  <img
+    src="{{ img | image_url: width: 1600 }}"
+    srcset="
+      {{ img | image_url: width: 800 }} 800w,
+      {{ img | image_url: width: 1200 }} 1200w,
+      {{ img | image_url: width: 1600 }} 1600w,
+      {{ img | image_url: width: 2400 }} 2400w
+    "
+    sizes="(max-width: 768px) 100vw, 60vw"
+    width="{{ img.width }}"
+    height="{{ img.height }}"
+    alt="{{ img.alt | escape | default: alt | escape }}"
+    loading="lazy"
+    class="{{ frame }}"
+  >
+{%- elsif img_url != blank -%}
+  <img
+    src="{{ img_url }}"
+    width="1600"
+    height="1200"
+    alt="{{ alt | escape }}"
+    loading="lazy"
+    class="{{ frame }}"
+  >
+{%- else -%}
+  {%- if natural -%}
+    <div class="w-full aspect-[4/3] bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a]"></div>
+  {%- else -%}
+    <div class="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a]"></div>
+  {%- endif -%}
+{%- endif -%}

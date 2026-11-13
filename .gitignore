@@ -42,3 +42,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 *.psd
 design
 .vscode
+.playwright-mcp
+# python
+__pycache__/

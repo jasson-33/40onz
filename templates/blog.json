@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "main": {
+      "type": "editorials",
+      "settings": {
+        "heading": "Editorials"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

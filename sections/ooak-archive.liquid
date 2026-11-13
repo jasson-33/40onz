@@ -1,0 +1,176 @@
+{%- comment -%}
+  One of a Kind — archive grid. Bottom half of the OOAK page:
+  status tabs (sold / available) + numbered product grid driven by
+  product.available, and a bespoke link. Products come from the
+  'one-of-a-kind' automated collection (tag = handle). Sold pieces
+  must stay published to appear. Filter + renumber in theme.js
+  (initOoakArchive).
+{%- endcomment -%}
+
+{%- liquid
+  assign collection = section.settings.collection
+  if collection == blank
+    assign collection = collections[section.settings.collection]
+  endif
+  assign sold_label = section.settings.sold_label | default: 'Sold / Collected'
+  assign available_label = section.settings.available_label | default: 'Available'
+-%}
+
+<section
+  id="ooak-archive"
+  class="bg-white text-ink px-6 lg:px-10 xl:px-16 py-14 lg:py-20"
+  data-ooak-archive
+>
+  <div class="max-w-[1500px] mx-auto">
+
+    {%- comment -%} ── Status tabs — styled like the OOAK footer nav ─── {%- endcomment -%}
+    <div class="grid grid-cols-3 font-aktiv text-[10px] lg:text-[11px] uppercase tracking-[0.35em] text-ink">
+      <button
+        type="button"
+        data-ooak-tab="sold"
+        aria-selected="false"
+        class="justify-self-start uppercase aria-selected:underline underline-offset-8"
+      >
+        {{ sold_label }}
+      </button>
+      <button
+        type="button"
+        data-ooak-tab="available"
+        aria-selected="false"
+        class="justify-self-center uppercase aria-selected:underline underline-offset-8"
+      >
+        {{ available_label }}
+      </button>
+      {%- assign bespoke_url = section.settings.bespoke_url | default: '/pages/bespoke' -%}
+      <a href="{{ bespoke_url }}" class="justify-self-end uppercase">
+        {{ section.settings.bespoke_label | default: 'Bespoke' }}
+      </a>
+    </div>
+
+    {%- comment -%} ── Numbered grid ──────────────────────────────────── {%- endcomment -%}
+    <ul class="grid grid-cols-2 md:grid-cols-3 gap-x-4 lg:gap-x-6 gap-y-14 lg:gap-y-20 pt-14 lg:pt-20">
+      {%- if collection != blank -%}
+        {%- for product in collection.products -%}
+          {%- assign card_lazy = true -%}
+          {%- if forloop.index <= 3 -%}{%- assign card_lazy = false -%}{%- endif -%}
+          <li data-availability="{% if product.available %}available{% else %}sold{% endif %}">
+            <a href="{{ product.url }}" class="group flex flex-col gap-4">
+              <p data-ooak-num class="font-plex-mono text-[11px] text-mid">
+                {{- forloop.index | prepend: '0' | slice: -2, 2 -}}.
+              </p>
+              <div class="aspect-[3/4] overflow-hidden bg-white flex items-center justify-center">
+                {%- if product.featured_media -%}
+                  <img
+                    src="{{ product.featured_media | image_url: width: 600 }}"
+                    srcset="
+                      {{ product.featured_media | image_url: width: 400 }} 400w,
+                      {{ product.featured_media | image_url: width: 600 }} 600w,
+                      {{ product.featured_media | image_url: width: 800 }} 800w
+                    "
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                    alt="{{ product.featured_media.alt | escape | default: product.title | escape }}"
+                    width="{{ product.featured_media.preview_image.width }}"
+                    height="{{ product.featured_media.preview_image.height }}"
+                    loading="{% if card_lazy %}lazy{% else %}eager{% endif %}"
+                    class="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-105"
+                  >
+                {%- endif -%}
+              </div>
+              <div class="font-plex-mono text-[10px] uppercase tracking-wider leading-[1.8] text-ink">
+                <p class="{% if product.available %}text-ink{% else %}text-mid{% endif %}">
+                  {%- if product.available -%}
+                    {{- available_label -}}
+                  {%- else -%}
+                    {{- sold_label -}}
+                  {%- endif -%}
+                </p>
+                <p>{{ product.title }}</p>
+                <p class="text-mid">{{ product.price | money }}</p>
+                <p aria-hidden="true">—</p>
+              </div>
+            </a>
+          </li>
+        {%- else -%}
+          <li class="col-span-full py-16 text-center text-sm tracking-[0.15em] uppercase text-mid">No pieces in this collection yet</li>
+        {%- endfor -%}
+      {%- else -%}
+        <li class="col-span-full py-16 text-center text-sm tracking-[0.15em] uppercase text-mid">Select a collection in the theme editor</li>
+      {%- endif -%}
+    </ul>
+
+    {%- comment -%} ── Legend ─────────────────────────────────────────── {%- endcomment -%}
+    {%- if section.settings.legend_label != blank or section.settings.legend_text != blank -%}
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mt-20 lg:mt-28 font-plex-mono">
+        {%- if section.settings.legend_label != blank -%}
+          <p class="md:col-span-4 text-[10px] uppercase tracking-wider text-mid">{{ section.settings.legend_label }}</p>
+        {%- endif -%}
+        {%- if section.settings.legend_text != blank -%}
+          <div class="md:col-span-5 text-[12px] leading-[1.9] text-ink">{{ section.settings.legend_text }}</div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "OOAK Archive",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Automated 'one-of-a-kind' collection (product tag = 'one-of-a-kind'). Sold-out pieces render as 'Sold / Collected' — keep them published."
+    },
+    {
+      "type": "header",
+      "content": "Tabs"
+    },
+    {
+      "type": "text",
+      "id": "sold_label",
+      "label": "Sold label",
+      "default": "Sold / Collected"
+    },
+    {
+      "type": "text",
+      "id": "available_label",
+      "label": "Available label",
+      "default": "Available"
+    },
+    {
+      "type": "text",
+      "id": "bespoke_label",
+      "label": "Bespoke label",
+      "default": "Bespoke"
+    },
+    {
+      "type": "url",
+      "id": "bespoke_url",
+      "label": "Bespoke link"
+    },
+    {
+      "type": "header",
+      "content": "Legend"
+    },
+    {
+      "type": "text",
+      "id": "legend_label",
+      "label": "Legend label",
+      "default": "Sold / Collected"
+    },
+    {
+      "type": "richtext",
+      "id": "legend_text",
+      "label": "Legend text",
+      "default": "<p>This one-of-a-kind piece has been acquired by a collector. It remains in the 40 Onzas Archive and will not be reproduced.</p>"
+    }
+  ],
+  "presets": [
+    {
+      "name": "OOAK Archive"
+    }
+  ]
+}
+{% endschema %}

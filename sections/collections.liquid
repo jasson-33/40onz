@@ -1,0 +1,219 @@
+{%- comment -%}
+  Collections — one 'collection' block per collection. Each block
+  renders a campaign banner (ambient media + corner labels),
+  a white product grid, and a collection label linking to the
+  collection page. First block's banner pulls under the fixed
+  header (same trick as bespoke).
+{%- endcomment -%}
+
+{%- liquid
+  assign banner_height = section.settings.banner_height | default: 100
+  assign overlay_opacity = section.settings.banner_overlay | default: 10 | divided_by: 100.0
+  assign products_per_page = section.settings.products_per_page | default: 12
+-%}
+
+<section class="bg-white text-ink">
+  {%- for block in section.blocks -%}
+    {%- liquid
+      assign is_first_block = forloop.first
+      assign collection = block.settings.collection
+      if collection == blank
+        assign collection = collections[block.settings.collection]
+      endif
+
+      assign campaign_label = block.settings.campaign_label
+      if campaign_label == blank and collection != blank
+        assign campaign_label = collection.title | append: ' Campaign'
+      endif
+
+      assign collection_label = block.settings.collection_label
+      if collection_label == blank and collection != blank
+        assign collection_label = collection.title | append: ' Collection'
+      endif
+
+      assign hide_info = true
+      if block.settings.show_product_info
+        assign hide_info = false
+      endif
+    -%}
+
+    <div {{ block.shopify_attributes }}>
+      {%- comment -%} ── Campaign banner ─────────────────────────────── {%- endcomment -%}
+      <div
+        class="relative w-full overflow-hidden bg-black"
+        style="height: {{ banner_height }}vh; min-height: 420px;{% if is_first_block %} margin-top: calc(-1 * var(--header-h, 140px));{% endif %}"
+      >
+        {%- render 'ambient-media',
+          video: block.settings.video,
+          video_url: block.settings.video_url,
+          image: block.settings.image,
+          asset: block.settings.asset,
+          image_url: block.settings.image_url,
+          alt: campaign_label,
+          sizes: '100vw'
+        -%}
+
+        <div class="absolute inset-0 bg-black pointer-events-none" style="opacity: {{ overlay_opacity }};"></div>
+
+        {%- if campaign_label != blank -%}
+          <p class="absolute bottom-5 left-6 lg:bottom-8 lg:left-10 z-10 font-aktiv font-extralight text-[10px] lg:text-[11px] tracking-[0.22em] uppercase text-white/85">
+            {{ campaign_label }}
+          </p>
+        {%- endif -%}
+        {%- if block.settings.season_label != blank -%}
+          <p class="absolute bottom-5 right-6 lg:bottom-8 lg:right-10 z-10 font-aktiv font-extralight text-[10px] lg:text-[11px] tracking-[0.22em] uppercase text-white/85">
+            {{ block.settings.season_label }}
+          </p>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} ── Product grid (infinite scroll via ?view=grid) ── {%- endcomment -%}
+      <div
+        class="px-6 lg:px-16 py-10 lg:py-14"
+        {% if collection != blank and collection.products_count > products_per_page %}
+          data-collections-unit
+          data-collection-url="{{ collection.url }}"
+          data-next-page="2"
+        {% endif %}
+      >
+        <ul data-unit-grid class="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
+          {%- if collection != blank -%}
+            {%- for product in collection.products limit: products_per_page -%}
+              {%- assign card_lazy = true -%}
+              {%- if is_first_block and forloop.index <= 4 -%}{%- assign card_lazy = false -%}{%- endif -%}
+              <li>{% render 'product-card', product: product, lazy: card_lazy, hide_info: hide_info %}</li>
+            {%- else -%}
+              <li class="col-span-full py-16 text-center text-sm tracking-[0.15em] uppercase text-mid">No products in this collection yet</li>
+            {%- endfor -%}
+          {%- else -%}
+            <li class="col-span-full py-16 text-center text-sm tracking-[0.15em] uppercase text-mid">Select a collection in the theme editor</li>
+          {%- endif -%}
+        </ul>
+        {%- if collection != blank and collection.products_count > products_per_page -%}
+          <div data-unit-sentinel class="h-1"></div>
+        {%- endif -%}
+
+        {%- if collection_label != blank -%}
+          <a
+            href="{{ collection.url | default: '#' }}"
+            class="mt-8 inline-block font-aktiv font-extralight text-[10px] lg:text-[11px] tracking-[0.22em] uppercase text-ink hover:text-mid transition-colors duration-200"
+          >
+            {{ collection_label }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endfor -%}
+</section>
+
+{% schema %}
+{
+  "name": "Collections",
+  "settings": [
+    {
+      "type": "range",
+      "id": "banner_height",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "label": "Banner height",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "banner_overlay",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Banner overlay",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 4,
+      "max": 48,
+      "step": 4,
+      "label": "Products per page",
+      "info": "Initial batch shown per collection; more load on scroll. Keep equal to 'per page' in the Collection grid template.",
+      "default": 12
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection",
+          "info": "Products auto-populate via tag-based automated collections (tag = collection handle, e.g. 'reset')."
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Banner video (Shopify-hosted)"
+        },
+        {
+          "type": "video_url",
+          "id": "video_url",
+          "label": "Banner video URL",
+          "accept": ["youtube", "vimeo"],
+          "info": "Used when no Shopify-hosted video is set."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Banner image"
+        },
+        {
+          "type": "text",
+          "id": "asset",
+          "label": "Banner asset filename",
+          "info": "Filename in assets/ (files in public/ get copied on build)."
+        },
+        {
+          "type": "url",
+          "id": "image_url",
+          "label": "Banner image URL"
+        },
+        {
+          "type": "text",
+          "id": "campaign_label",
+          "label": "Campaign label (bottom left)",
+          "info": "Defaults to '<collection title> Campaign'."
+        },
+        {
+          "type": "text",
+          "id": "season_label",
+          "label": "Season label (bottom right)",
+          "info": "e.g. ARCHIVE / FW25"
+        },
+        {
+          "type": "text",
+          "id": "collection_label",
+          "label": "Collection label (under grid)",
+          "info": "Defaults to '<collection title> Collection'."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_product_info",
+          "label": "Show product title & price",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collections",
+      "blocks": [
+        { "type": "collection", "settings": { "season_label": "ARCHIVE / FW25" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

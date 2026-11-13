@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "grid": {
+      "type": "collection-grid",
+      "settings": {
+        "per_page": 12,
+        "show_product_info": false
+      }
+    }
+  },
+  "order": [
+    "grid"
+  ]
+}

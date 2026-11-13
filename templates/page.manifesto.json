@@ -1,0 +1,94 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "manifesto": {
+      "type": "manifesto",
+      "blocks": {
+        "para-1": {
+          "type": "paragraph",
+          "settings": {
+            "body": "<p>Este es un manifiesto contra la repetición, contra el algoritmo que produce sin alma, contra la máquina que sustituye oficio por velocidad.</p>"
+          }
+        },
+        "para-2": {
+          "type": "paragraph",
+          "settings": {
+            "body": "<p>Objetos que parecen perfectos, pero que al tocarlos están huecos. Joyas renderizadas, réplicas en serie que carecen de historia.</p>"
+          }
+        },
+        "prin-1": {
+          "type": "principle",
+          "settings": {
+            "body": "<p>Defendemos la imperfección como verdad.</p>",
+            "subtext": "",
+            "divider_before": false
+          }
+        },
+        "prin-2": {
+          "type": "principle",
+          "settings": {
+            "body": "<p>El tiempo invertido como valor.</p>",
+            "subtext": "",
+            "divider_before": false
+          }
+        },
+        "prin-3": {
+          "type": "principle",
+          "settings": {
+            "body": "<p>No se renderiza. No se programa. No se imprime en masa.</p>",
+            "subtext": "",
+            "divider_before": false
+          }
+        },
+        "prin-4": {
+          "type": "principle",
+          "settings": {
+            "body": "<p>El lujo real nace de cicatrices en la piel, del error corregido, del pulso cansado que insiste en transformar metal en legado.</p>",
+            "subtext": "",
+            "divider_before": false
+          }
+        },
+        "prin-5": {
+          "type": "principle",
+          "settings": {
+            "body": "<p>El verdadero valor está en lo humano.</p>",
+            "subtext": "Belleza cruda. Irrepetible. Indomable.",
+            "divider_before": true
+          }
+        }
+      },
+      "block_order": [
+        "para-1",
+        "para-2",
+        "prin-1",
+        "prin-2",
+        "prin-3",
+        "prin-4",
+        "prin-5"
+      ],
+      "settings": {
+        "video_url": "https://www.youtube.com/watch?v=pZ8HAi-bcRE&t=1s",
+        "banner_height": 100,
+        "overlay_opacity": 10,
+        "bg_image": "shopify://shop_images/fondo.png",
+        "bg_dim": 0,
+        "heading_line_1": "Mani",
+        "heading_line_2": "Fies",
+        "heading_line_3": "To",
+        "footer_mark": "MMXXV",
+        "footer_text": "<p>Cuarenta Onzas<br/>www.cuarentaonzas.com<br/>Hecho en México</p>"
+      }
+    }
+  },
+  "order": [
+    "manifesto"
+  ]
+}

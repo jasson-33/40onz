@@ -2,7 +2,7 @@
 
   {%- comment -%} Row 1 — service claims {%- endcomment -%}
   <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-b border-white/10 max-w-[1920px] mx-auto">
-    <li class="py-16 px-6 text-center text-[11px] tracking-[0.22em] uppercase text-white/80 border border-white/10">Bespoke · Care · Restoration</li>
+    <li class="border border-white/10"><a href="/pages/bespoke" class="block py-16 px-6 text-center text-[11px] tracking-[0.22em] uppercase text-white/80 hover:text-white transition-colors duration-200">Bespoke · Care · Restoration</a></li>
     <li class="py-16 px-6 text-center text-[11px] tracking-[0.22em] uppercase text-white/80 border border-white/10 border-t-0 lg:border-t">Headquarter</li>
     <li class="py-16 px-6 text-center text-[11px] tracking-[0.22em] uppercase text-white/80 border border-white/10 border-t-0 lg:border-t">Shipping</li>
     <li class="py-16 px-6 text-center text-[11px] tracking-[0.22em] uppercase text-white/80 border border-white/10 border-t-0 lg:border-t">Worldwide Delivery</li>
@@ -11,8 +11,21 @@
   {%- comment -%} Row 2 — logo + legal + links {%- endcomment -%}
   <div class="flex flex-col md:flex-row items-center justify-around gap-10 md:gap-20 lg:gap-32 px-6 lg:px-10 py-20 border-b border-white/10 max-w-[1400px] mx-auto">
     <div class="flex items-center justify-center gap-4 sm:gap-10 shrink-0">
-      <a href="{{ routes.root_url }}" class="text-white text-2xl font-display tracking-[0.08em] uppercase">
-        {{ section.settings.logo_text | default: shop.name }}
+      <a href="{{ routes.root_url }}" class="flex items-center" aria-label="{{ shop.name }}">
+        {%- if section.settings.logo_image != blank -%}
+          <img
+            src="{{ section.settings.logo_image | image_url: width: 480 }}"
+            alt="{{ shop.name }}"
+            width="{{ section.settings.logo_width | default: 160 }}"
+            height="auto"
+            loading="lazy"
+            class="h-8 w-auto object-contain"
+          >
+        {%- else -%}
+          <span class="text-white text-2xl font-display tracking-[0.08em] uppercase">
+            {{ section.settings.logo_text | default: shop.name }}
+          </span>
+        {%- endif -%}
       </a>
       <div class="text-[10px] leading-relaxed tracking-[0.12em] uppercase text-[#6b6b6b]">
         <p>© {{ shop.name }} · {{ 'now' | date: '%Y' }} · All rights reserved.</p>
@@ -83,6 +96,21 @@
 {
   "name": "Footer",
   "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo_image",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 80,
+      "max": 320,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width",
+      "default": 160
+    },
     {
       "type": "text",
       "id": "logo_text",

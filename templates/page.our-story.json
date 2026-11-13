@@ -1,0 +1,43 @@
+{
+  "sections": {
+    "our-story": {
+      "type": "our-story",
+      "blocks": {
+        "img-collage": {
+          "type": "image",
+          "settings": {
+            "asset": "our-story-collage.jpg",
+            "rotation": 0,
+            "width": 100,
+            "alignment": "center",
+            "frame": false
+          }
+        },
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "Our Story",
+            "body": "<p>40 Onzas was born from a refusal — a refusal to renderize, to mass produce, to sand the edges off what makes an object alive. Each piece begins in the atelier as raw metal and stubborn intention.</p><p>We work the way the old houses worked: by hand, by eye, by feel. Silver, gold and bronze are cut, hammered and finished until the material itself decides it is done.</p>"
+          }
+        },
+        "text-2": {
+          "type": "text",
+          "settings": {
+            "heading": "",
+            "body": "<p>The workshop smells of wax and flame. Tools older than the hands that hold them line the benches. Nothing here is rushed — a single ring may pass through fire a dozen times before it earns its finish.</p><p>Imperfection is not corrected; it is kept. It is the fingerprint of the maker, the proof that a person, not a machine, stood behind the work.</p>"
+          }
+        },
+        "text-3": {
+          "type": "text",
+          "settings": {
+            "heading": "",
+            "body": "<p>Time invested is value. A piece from 40 Onzas is not a product — it is a record of hours, of decisions, of a dialogue between maker and material that can never be repeated.</p>"
+          }
+        }
+      },
+      "block_order": ["img-collage", "text-1", "text-2", "text-3"],
+      "settings": {}
+    }
+  },
+  "order": ["our-story"]
+}

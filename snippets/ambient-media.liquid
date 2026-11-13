@@ -1,0 +1,115 @@
+{%- comment -%}
+  Ambient media slot — muted autoplay loop, no controls.
+  Priority: video (Shopify-hosted) > video_url (YouTube/Vimeo) >
+  image > asset (theme asset filename) > image_url > placeholder.
+  Accepts: video, video_url, image, asset, image_url, alt, natural,
+  sizes (sizes attr override; default '(min-width: 1024px) 40vw, 90vw')
+  (natural = flow height; otherwise absolute-cover the wrapper).
+{%- endcomment -%}
+
+{%- liquid
+  assign frame = 'absolute inset-0 w-full h-full object-cover'
+  assign img_sizes = sizes | default: '(min-width: 1024px) 40vw, 90vw'
+  assign frame_video = 'absolute top-0 left-1/2 h-full aspect-video -translate-x-1/2 pointer-events-none'
+  if natural
+    assign frame = 'w-full h-auto'
+    assign frame_video = 'w-full aspect-video pointer-events-none'
+  endif
+
+  assign yt_id = ''
+  assign vimeo_id = ''
+  if video_url != blank
+    assign u = video_url | strip
+    if u contains 'youtu.be/'
+      assign yt_id = u | split: 'youtu.be/' | last | split: '?' | first | split: '&' | first
+    elsif u contains 'watch?v='
+      assign yt_id = u | split: 'watch?v=' | last | split: '&' | first
+    elsif u contains 'youtube.com/embed/'
+      assign yt_id = u | split: 'embed/' | last | split: '?' | first
+    elsif u contains 'youtube.com/shorts/'
+      assign yt_id = u | split: 'shorts/' | last | split: '?' | first
+    elsif u contains 'vimeo.com/'
+      assign vimeo_id = u | split: 'vimeo.com/' | last | split: '?' | first | split: '/' | first
+    endif
+  endif
+-%}
+
+{%- if video != blank -%}
+  <video
+    autoplay
+    muted
+    loop
+    playsinline
+    {% if image != blank %}
+      poster="{{ image | image_url: width: 1200 }}"
+    {% endif %}
+    aria-hidden="true"
+    tabindex="-1"
+    class="{{ frame }} pointer-events-none"
+  >
+    {%- for source in video.sources -%}
+      <source src="{{ source.url }}" type="{{ source.mime_type }}">
+    {%- endfor -%}
+  </video>
+{%- elsif yt_id != blank -%}
+  <iframe
+    src="https://www.youtube.com/embed/{{ yt_id }}?autoplay=1&mute=1&loop=1&playlist={{ yt_id }}&controls=0&modestbranding=1&playsinline=1&rel=0&fs=0&disablekb=1&iv_load_policy=3&enablejsapi=1"
+    allow="autoplay; encrypted-media"
+    allowfullscreen
+    frameborder="0"
+    aria-hidden="true"
+    tabindex="-1"
+    class="{{ frame_video }}"
+  ></iframe>
+{%- elsif vimeo_id != blank -%}
+  <iframe
+    src="https://player.vimeo.com/video/{{ vimeo_id }}?autoplay=1&muted=1&loop=1&background=1&autopause=0&controls=0"
+    allow="autoplay; encrypted-media"
+    allowfullscreen
+    frameborder="0"
+    aria-hidden="true"
+    tabindex="-1"
+    class="{{ frame_video }}"
+  ></iframe>
+{%- elsif image != blank -%}
+  <img
+    src="{{ image | image_url: width: 1200 }}"
+    srcset="
+      {{ image | image_url: width: 600 }} 600w,
+      {{ image | image_url: width: 900 }} 900w,
+      {{ image | image_url: width: 1200 }} 1200w,
+      {{ image | image_url: width: 1600 }} 1600w,
+      {{ image | image_url: width: 2000 }} 2000w
+    "
+    sizes="{{ img_sizes }}"
+    width="{{ image.width }}"
+    height="{{ image.height }}"
+    alt="{{ image.alt | escape | default: alt | escape }}"
+    loading="lazy"
+    class="{{ frame }}"
+  >
+{%- elsif asset != blank -%}
+  <img
+    src="{{ asset | asset_url }}"
+    width="1200"
+    height="1200"
+    alt="{{ alt | escape | default: asset | escape }}"
+    loading="lazy"
+    class="{{ frame }}"
+  >
+{%- elsif image_url != blank -%}
+  <img
+    src="{{ image_url }}"
+    width="1200"
+    height="1200"
+    alt="{{ alt | escape }}"
+    loading="lazy"
+    class="{{ frame }}"
+  >
+{%- else -%}
+  {%- if natural -%}
+    {{ 'image' | placeholder_svg_tag: 'w-full aspect-[4/3]' }}
+  {%- else -%}
+    {{ 'image' | placeholder_svg_tag: 'absolute inset-0 w-full h-full object-cover' }}
+  {%- endif -%}
+{%- endif -%}

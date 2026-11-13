@@ -1,0 +1,68 @@
+{
+  "sections": {
+    "atelier": {
+      "type": "atelier",
+      "blocks": {
+        "heading-1": {
+          "type": "heading",
+          "settings": {
+            "heading": "Atelier"
+          }
+        },
+        "para-1": {
+          "type": "paragraph",
+          "settings": {
+            "body": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>"
+          }
+        },
+        "split-1": {
+          "type": "split",
+          "settings": {
+            "video_url": "https://www.youtube.com/watch?v=pZ8HAi-bcRE&t=1s",
+            "asset": "atelier-section-1.png",
+            "body": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>",
+            "column_left": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat.</p>",
+            "column_right": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat.</p>"
+          }
+        },
+        "image-1": {
+          "type": "image",
+          "settings": {
+            "asset": "atelier-big-section.png",
+            "height": 810
+          }
+        },
+        "para-2": {
+          "type": "paragraph",
+          "settings": {
+            "body": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>"
+          }
+        },
+        "videos-1": {
+          "type": "video_row",
+          "settings": {
+            "video_url_1": "https://www.youtube.com/watch?v=pZ8HAi-bcRE&t=1s",
+            "video_url_2": "https://www.youtube.com/watch?v=pZ8HAi-bcRE&t=1s",
+            "video_url_3": "https://www.youtube.com/watch?v=pZ8HAi-bcRE&t=1s"
+          }
+        }
+      },
+      "block_order": [
+        "heading-1",
+        "para-1",
+        "split-1",
+        "image-1",
+        "para-2",
+        "videos-1"
+      ],
+      "settings": {
+        "video_url": "https://www.youtube.com/watch?v=pZ8HAi-bcRE&t=1s",
+        "banner_height": 100,
+        "overlay_opacity": 10
+      }
+    }
+  },
+  "order": [
+    "atelier"
+  ]
+}

@@ -1,0 +1,107 @@
+{%- comment -%}
+  Article Collabs — lookbook page for collab articles.
+  Top: 3-col header — logo (custom.logo), article.content, credits (custom.credits).
+  Middle: media cluster from custom.gallery_mixed — item 1 top-left, item 2 tall
+          right, item 3 bottom-left — with a "BLOG / YEAR" label (custom.subtitle).
+  Then: secondary text (custom.additional_content, rich text).
+  Bottom: flush media strip from custom.gallery_bottom (mixed_reference list).
+{%- endcomment -%}
+
+{%- assign items = article.metafields.custom.gallery_mixed.value -%}
+{%- assign bottom = article.metafields.custom.gallery_bottom.value -%}
+{%- assign logo = article.metafields.custom.logo.value -%}
+{%- assign credits = article.metafields.custom.credits.value -%}
+{%- assign label = article.metafields.custom.subtitle.value -%}
+{%- assign text_2 = article.metafields.custom.additional_content.value -%}
+
+{%- if label == blank -%}
+  {%- assign year = article.published_at | date: '%Y' -%}
+  {%- assign label = blog.title | append: ' / ' | append: year -%}
+{%- endif -%}
+
+{%- assign has_header = false -%}
+{%- if logo != blank or credits != blank or article.content != blank -%}
+  {%- assign has_header = true -%}
+{%- endif -%}
+
+<article class="bg-white text-ink">
+  <h1 class="sr-only">{{ article.title }}</h1>
+
+  {%- if has_header -%}
+    <div class="grid md:grid-cols-3 gap-8 lg:gap-12 px-6 lg:px-16 pt-16 lg:pt-24 items-start">
+      <div>
+        {%- if logo != blank -%}
+          <img
+            src="{{ logo | image_url: width: 600 }}"
+            width="{{ logo.width }}"
+            height="{{ logo.height }}"
+            alt="{{ article.title | escape }}"
+            loading="lazy"
+            class="w-auto h-16 lg:h-24 object-contain"
+          >
+        {%- endif -%}
+      </div>
+      <div class="font-acumin text-sm leading-6 font-light text-ink">
+        {{ article.content }}
+      </div>
+      <div class="font-acumin text-xs leading-5 font-light text-mid">
+        {{ credits | newline_to_br }}
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- if items != blank and items.size > 0 -%}
+    <div class="relative px-6 lg:px-16 py-12 lg:py-16">
+      {%- if label != blank -%}
+        <span class="hidden md:block absolute left-6 lg:left-16 top-1/2 -translate-y-1/2 font-acumin text-xs uppercase tracking-widest font-light text-mid">
+          {{ label }}
+        </span>
+      {%- endif -%}
+
+      <div class="w-full md:w-2/3 md:ml-auto md:h-[80vh] grid md:grid-cols-2">
+        <div class="flex flex-col md:h-full">
+          {%- for item in items limit: 1 -%}
+            <div class="relative aspect-[4/5] md:aspect-auto md:flex-1 overflow-hidden">
+              {%- render 'article-media', item: item, alt: article.title -%}
+            </div>
+          {%- endfor -%}
+          {%- for item in items offset: 2 limit: 1 -%}
+            <div class="relative aspect-[4/5] md:aspect-auto md:flex-1 overflow-hidden">
+              {%- render 'article-media', item: item, alt: article.title -%}
+            </div>
+          {%- endfor -%}
+        </div>
+        {%- for item in items offset: 1 limit: 1 -%}
+          <div class="relative aspect-[4/5] md:aspect-auto md:h-full overflow-hidden">
+            {%- render 'article-media', item: item, alt: article.title -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- if text_2 != blank -%}
+    <div class="px-6 lg:px-16 pb-12 lg:pb-16 grid md:grid-cols-3 gap-8 lg:gap-12">
+      <div class="md:col-start-2 md:col-span-2 text-left font-acumin text-sm leading-6 font-light text-ink">
+        {{ article.metafields.custom.additional_content | metafield_tag }}
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- if bottom != blank and bottom.size > 0 -%}
+    <ul class="flex flex-wrap">
+      {%- for item in bottom -%}
+        <li class="relative w-full md:w-auto md:grow md:basis-0 aspect-[4/5] md:aspect-auto md:h-[75vh] overflow-hidden">
+          {%- render 'article-media', item: item, alt: article.title -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</article>
+
+{% schema %}
+{
+  "name": "Article Collabs",
+  "settings": []
+}
+{% endschema %}

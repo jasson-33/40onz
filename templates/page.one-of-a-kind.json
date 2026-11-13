@@ -1,0 +1,83 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "one-of-a-kind": {
+      "type": "one-of-a-kind",
+      "blocks": {
+        "sketches": {
+          "type": "media",
+          "settings": {
+            "video_url": "",
+            "asset": "one-of-a-kind-sketches.jpg",
+            "image_url": "",
+            "alt": "Ring sketches",
+            "aspect": "natural"
+          }
+        },
+        "names": {
+          "type": "names",
+          "settings": {
+            "text": "SHY · PATTERN · ENFILADE · INCISION SAPPH · INCISION ONX · NOVELTY · SCHAFFINO\nLOPSIDED · VESTIGE · SOLILOQUY · FPLAB · FPSAPP · RESTART AMAT"
+          }
+        },
+        "workshop": {
+          "type": "media",
+          "settings": {
+            "video_url": "",
+            "asset": "one-of-a-kind-workshop.jpg",
+            "image_url": "",
+            "alt": "Workshop",
+            "aspect": "natural"
+          }
+        },
+        "necklace": {
+          "type": "media",
+          "settings": {
+            "video_url": "",
+            "asset": "one-of-a-kind-necklace.jpg",
+            "image_url": "",
+            "alt": "Necklace",
+            "aspect": "natural"
+          }
+        }
+      },
+      "block_order": [
+        "sketches",
+        "names",
+        "workshop",
+        "necklace"
+      ],
+      "settings": {
+        "heading": "One of a kind",
+        "intro": "<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo.</p>",
+        "body": "<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>",
+        "journal_asset": "one-of-a-kind-journal.png",
+        "journal_image_url": ""
+      }
+    },
+    "ooak-archive": {
+      "type": "ooak-archive",
+      "settings": {
+        "collection": "one-of-a-kind",
+        "sold_label": "Sold / Collected",
+        "available_label": "Available",
+        "bespoke_label": "Bespoke",
+        "bespoke_url": "shopify://pages/bespoke",
+        "legend_label": "Sold / Collected",
+        "legend_text": "<p>This one-of-a-kind piece has been acquired by a collector. It remains in the 40 Onzas Archive and will not be reproduced.</p>"
+      }
+    }
+  },
+  "order": [
+    "one-of-a-kind",
+    "ooak-archive"
+  ]
+}

@@ -1,0 +1,385 @@
+{%- comment -%}
+  Manifesto — video banner with side label, then a text manifesto
+  on a black textured background (bg image provided via theme editor).
+  'paragraph' blocks render in the left column,
+  'principle' blocks render numbered in the right column.
+{%- endcomment -%}
+
+{%- liquid
+  assign banner_height = section.settings.banner_height | default: 55
+-%}
+
+<section class="bg-black text-white">
+  {%- comment -%} ── Video banner ─────────────────────────────────────── {%- endcomment -%}
+  <div
+    class="relative w-full overflow-hidden bg-black"
+    style="height: {{ banner_height }}vh; min-height: 420px;"
+  >
+    {%- if section.settings.video != blank -%}
+      <video
+        autoplay
+        muted
+        loop
+        playsinline
+        {% if section.settings.image != blank %}
+          poster="{{ section.settings.image | image_url: width: 2000 }}"
+        {% endif %}
+        aria-hidden="true"
+        tabindex="-1"
+        class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+      >
+        {%- for source in section.settings.video.sources -%}
+          <source src="{{ source.url }}" type="{{ source.mime_type }}">
+        {%- endfor -%}
+      </video>
+    {%- elsif section.settings.video_url != blank -%}
+      {%- assign video_url = section.settings.video_url -%}
+      {%- if video_url contains 'youtube.com' or video_url contains 'youtu.be' -%}
+        {%- liquid
+          if video_url contains 'youtu.be/'
+            assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first
+          elsif video_url contains 'youtube.com/watch?v='
+            assign yt_id = video_url | split: 'v=' | last | split: '&' | first
+          elsif video_url contains 'youtube.com/shorts/'
+            assign yt_id = video_url | split: 'shorts/' | last | split: '?' | first
+          endif
+        -%}
+        <iframe
+          src="https://www.youtube.com/embed/{{ yt_id }}?autoplay=1&mute=1&loop=1&playlist={{ yt_id }}&controls=0&modestbranding=1&playsinline=1&rel=0&fs=0&disablekb=1&iv_load_policy=3&enablejsapi=1"
+          allow="autoplay; encrypted-media"
+          allowfullscreen
+          frameborder="0"
+          aria-hidden="true"
+          tabindex="-1"
+          class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        ></iframe>
+      {%- elsif video_url contains 'vimeo.com' -%}
+        {%- assign vimeo_id = video_url | split: 'vimeo.com/' | last | split: '?' | first | split: '/' | first -%}
+        <iframe
+          src="https://player.vimeo.com/video/{{ vimeo_id }}?autoplay=1&muted=1&loop=1&background=1&autopause=0&controls=0"
+          allow="autoplay; encrypted-media"
+          allowfullscreen
+          frameborder="0"
+          aria-hidden="true"
+          tabindex="-1"
+          class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        ></iframe>
+      {%- endif -%}
+    {%- elsif section.settings.image != blank -%}
+      <img
+        src="{{ section.settings.image | image_url: width: 2000 }}"
+        srcset="
+          {{ section.settings.image | image_url: width: 800 }} 800w,
+          {{ section.settings.image | image_url: width: 1200 }} 1200w,
+          {{ section.settings.image | image_url: width: 1600 }} 1600w,
+          {{ section.settings.image | image_url: width: 2000 }} 2000w
+        "
+        sizes="100vw"
+        width="2000"
+        height="1125"
+        alt="{{ section.settings.image.alt | escape | default: section.settings.heading_line_1 | escape }}"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 w-full h-full object-cover object-center"
+      >
+    {%- endif -%}
+
+    {%- comment -%} Overlay {%- endcomment -%}
+    <div
+      class="absolute inset-0 bg-black"
+      style="opacity: {{ section.settings.overlay_opacity | default: 10 | divided_by: 100.0 }};"
+    ></div>
+
+  </div>
+
+  {%- comment -%} ── Manifesto body ────────────────────────────────────── {%- endcomment -%}
+  <div class="relative bg-black overflow-hidden">
+    {%- if section.settings.bg_image != blank -%}
+      <img
+        src="{{ section.settings.bg_image | image_url: width: 2000 }}"
+        alt=""
+        width="2000"
+        height="1125"
+        loading="lazy"
+        aria-hidden="true"
+        class="absolute inset-0 w-full h-full object-cover opacity-100"
+      >
+      <div class="absolute inset-0 bg-black" style="opacity: {{ section.settings.bg_dim | default: 0 | divided_by: 100.0 }};"></div>
+    {%- endif -%}
+
+    <div class="relative z-10 max-w-[1200px] mx-auto px-6 lg:px-16 py-24 lg:py-36">
+
+      {%- comment -%} Heading — stacked display lines flanked by diamonds {%- endcomment -%}
+      <header class="text-center mb-20 lg:mb-28">
+        {%- if section.settings.heading_line_1 != blank -%}
+          <p class="flex items-center justify-center gap-6">
+            <span class="inline-block w-[6px] h-[6px] rotate-45 bg-white/80"></span>
+            <span class="font-roslindale text-5xl md:text-6xl lg:text-7xl font-light uppercase tracking-[0.18em] leading-[1.15] text-white">
+              {{ section.settings.heading_line_1 }}
+            </span>
+            <span class="inline-block w-[6px] h-[6px] rotate-45 bg-white/80"></span>
+          </p>
+        {%- endif -%}
+        {%- if section.settings.heading_line_2 != blank -%}
+          <p class="font-roslindale text-5xl md:text-6xl lg:text-7xl font-light uppercase tracking-[0.18em] leading-[1.15] text-white">
+            {{ section.settings.heading_line_2 }}
+          </p>
+        {%- endif -%}
+        {%- if section.settings.heading_line_3 != blank -%}
+          <p class="font-roslindale text-5xl md:text-6xl lg:text-7xl font-light uppercase tracking-[0.18em] leading-[1.15] text-white">
+            {{ section.settings.heading_line_3 }}
+          </p>
+        {%- endif -%}
+        <span class="inline-block w-[6px] h-[6px] rotate-45 bg-white/80 mt-8"></span>
+      </header>
+
+      {%- comment -%} Two-column manifesto text with center hairline {%- endcomment -%}
+      <div class="relative grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-28">
+        <div class="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-white/10" aria-hidden="true"></div>
+
+        {%- comment -%} Left column — paragraphs {%- endcomment -%}
+        <div class="flex flex-col gap-12 font-acumin uppercase text-[21.9px] leading-[35.9px] tracking-[0.25em] [font-weight:194.29] text-white">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'paragraph' -%}
+              <div class="space-y-6" {{ block.shopify_attributes }}>
+                {{ block.settings.body }}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- comment -%} Right column — numbered principles {%- endcomment -%}
+        <div class="flex flex-col font-acumin uppercase text-[21.9px] leading-[35.9px] tracking-[0.25em] [font-weight:194.29] text-white">
+          {%- assign principle_index = 0 -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'principle' -%}
+              {%- assign principle_index = principle_index | plus: 1 -%}
+              {%- if block.settings.divider_before -%}
+                <div class="w-24 h-px bg-white/25 my-10" aria-hidden="true"></div>
+              {%- endif -%}
+              <div class="flex gap-6 {% unless principle_index == 1 or block.settings.divider_before %}mt-10{% endunless %}" {{ block.shopify_attributes }}>
+                <span class="shrink-0 font-roslindale font-light text-[15px] leading-[28.9px] tracking-[0.2em] text-white/60 pt-[0.4em]">
+                  {{ principle_index }}.
+                </span>
+                <div class="space-y-6">
+                  {{ block.settings.body }}
+                  {%- if block.settings.subtext != blank -%}
+                    <p class="font-aktiv font-extralight text-[13px] leading-[20.5px] tracking-[0.4em] text-white/70">
+                      {{ block.settings.subtext }}
+                    </p>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+
+      {%- comment -%} Footer mark — MMXXV + colophon {%- endcomment -%}
+      {%- if section.settings.footer_mark != blank or section.settings.footer_text != blank -%}
+        <footer class="mt-28 lg:mt-36 text-center">
+          {%- if section.settings.footer_mark != blank -%}
+            <p class="flex items-center justify-center gap-6 mb-6">
+              <span class="inline-block w-[5px] h-[5px] rotate-45 bg-white/70"></span>
+              <span class="font-acumin text-base tracking-[0.6em] uppercase text-white [font-weight:194.29]">
+                {{ section.settings.footer_mark }}
+              </span>
+              <span class="inline-block w-[5px] h-[5px] rotate-45 bg-white/70"></span>
+            </p>
+          {%- endif -%}
+          {%- if section.settings.footer_text != blank -%}
+            <div class="font-aktiv font-extralight text-[11px] leading-[16.9px] tracking-[0.4em] uppercase text-white/60">
+              {{ section.settings.footer_text }}
+            </div>
+          {%- endif -%}
+        </footer>
+      {%- endif -%}
+
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Manifesto",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Banner"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Banner video",
+      "info": "Shopify-hosted video. Takes priority over video URL and image."
+    },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "label": "Video URL",
+      "accept": ["youtube", "vimeo"],
+      "info": "Fallback if no Shopify-hosted video is set.",
+      "default": "https://www.youtube.com/watch?v=pZ8HAi-bcRE&t=1s"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner image (fallback / poster)"
+    },
+    {
+      "type": "range",
+      "id": "banner_height",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "label": "Banner height",
+      "default": 55
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Banner overlay opacity",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Body"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image",
+      "info": "Black textured background. Solid black if empty."
+    },
+    {
+      "type": "range",
+      "id": "bg_dim",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Background dim",
+      "default": 0
+    },
+    {
+      "type": "text",
+      "id": "heading_line_1",
+      "label": "Heading line 1",
+      "default": "Mani"
+    },
+    {
+      "type": "text",
+      "id": "heading_line_2",
+      "label": "Heading line 2",
+      "default": "Fies"
+    },
+    {
+      "type": "text",
+      "id": "heading_line_3",
+      "label": "Heading line 3",
+      "default": "To"
+    },
+    {
+      "type": "header",
+      "content": "Footer"
+    },
+    {
+      "type": "text",
+      "id": "footer_mark",
+      "label": "Footer mark",
+      "default": "MMXXV"
+    },
+    {
+      "type": "richtext",
+      "id": "footer_text",
+      "label": "Footer colophon",
+      "default": "<p>Cuarenta Onzas<br/>www.cuarentaonzas.com<br/>Hecho en México</p>"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "name": "Paragraph (left)",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "Body",
+          "default": "<p>Write a manifesto paragraph.</p>"
+        }
+      ]
+    },
+    {
+      "type": "principle",
+      "name": "Principle (right)",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "Body",
+          "default": "<p>State a principle.</p>"
+        },
+        {
+          "type": "text",
+          "id": "subtext",
+          "label": "Subtext"
+        },
+        {
+          "type": "checkbox",
+          "id": "divider_before",
+          "label": "Divider before",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Manifesto",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "settings": {
+            "body": "<p>Este es un manifiesto contra la repetición, contra el algoritmo que produce sin alma, contra la máquina que sustituye oficio por velocidad.</p>"
+          }
+        },
+        {
+          "type": "paragraph",
+          "settings": {
+            "body": "<p>Objetos que parecen perfectos, pero que al tocarlos están huecos. Joyas renderizadas, réplicas en serie que carecen de historia.</p>"
+          }
+        },
+        {
+          "type": "principle",
+          "settings": { "body": "<p>Defendemos la imperfección como verdad.</p>" }
+        },
+        {
+          "type": "principle",
+          "settings": { "body": "<p>El tiempo invertido como valor.</p>" }
+        },
+        {
+          "type": "principle",
+          "settings": { "body": "<p>No se renderiza. No se programa. No se imprime en masa.</p>" }
+        },
+        {
+          "type": "principle",
+          "settings": { "body": "<p>El lujo real nace de cicatrices en la piel, del error corregido, del pulso cansado que insiste en transformar metal en legado.</p>" }
+        },
+        {
+          "type": "principle",
+          "settings": {
+            "body": "<p>El verdadero valor está en lo humano.</p>",
+            "subtext": "Belleza cruda. Irrepetible. Indomable.",
+            "divider_before": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

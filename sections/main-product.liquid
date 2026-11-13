@@ -48,7 +48,7 @@
         <h1 class="font-display text-3xl md:text-4xl font-light leading-tight mb-4 text-[#111]">{{ product.title }}</h1>
         <p class="text-lg text-[#111] mb-6">
           {%- if product.price_varies -%}<span>From </span>{%- endif -%}
-          <span class="{% if current_variant.compare_at_price > current_variant.price %}text-red-600{% endif %}">
+          <span data-product-price class="{% if current_variant.compare_at_price > current_variant.price %}text-red-600{% endif %}">
             {{ current_variant.price | money }}
           </span>
           {%- if current_variant.compare_at_price > current_variant.price -%}
@@ -73,37 +73,22 @@
                 <p class="text-xs tracking-widest uppercase text-[#6b6b6b]">
                   {{ option.name }}: <span class="text-[#111]" id="option-{{ forloop.index }}-selected">{{ option.selected_value }}</span>
                 </p>
-                {%- if section.settings.show_size_chart -%}
-                  <button data-size-chart-open class="text-xs text-[#c9a96e] hover:text-[#111] transition-colors duration-200 uppercase tracking-widest">
+                {%- if section.settings.show_size_chart and option.name == 'Size' -%}
+                  <button type="button" data-size-chart-open aria-controls="size-chart-{{ section.id }}" aria-expanded="false" class="text-xs text-[#c9a96e] hover:text-[#111] transition-colors duration-200 uppercase tracking-widest">
                     Size Chart
                   </button>
                 {%- endif -%}
               </div>
-              {%- if option.name == 'Size' -%}
-                <div class="border border-[#e5e5e5] max-h-48 overflow-y-auto">
-                  {%- for value in option.values -%}
-                    <button
-                      class="w-full px-4 py-3 text-left text-sm border-b border-[#e5e5e5] last:border-b-0 {% if option.selected_value == value %}bg-[#f5f5f5] text-[#111]{% else %}text-[#6b6b6b] hover:bg-[#f9f9f9]{% endif %} transition-colors duration-200"
-                      data-option-value="{{ value | escape }}"
-                      data-option-index="{{ forloop.parentloop.index0 }}"
-                    >
-                      {{ value }}
-                    </button>
-                  {%- endfor -%}
-                </div>
-              {%- else -%}
-                <div class="flex flex-wrap gap-2">
-                  {%- for value in option.values -%}
-                    <button
-                      class="px-4 py-2 border text-xs tracking-wide {% if option.selected_value == value %}border-[#c9a96e] text-[#c9a96e]{% else %}border-[#e5e5e5] text-[#6b6b6b] hover:border-[#111] hover:text-[#111]{% endif %} transition-colors duration-200"
-                      data-option-value="{{ value | escape }}"
-                      data-option-index="{{ forloop.parentloop.index0 }}"
-                    >
-                      {{ value }}
-                    </button>
-                  {%- endfor -%}
-                </div>
-              {%- endif -%}
+              <select
+                aria-label="{{ option.name | escape }}"
+                data-product-option
+                data-option-index="{{ forloop.index0 }}"
+                class="w-full border border-[#e5e5e5] bg-white px-4 py-3 text-sm text-[#111] focus:outline-none focus:border-[#c9a96e]"
+              >
+                {%- for value in option.values -%}
+                  <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                {%- endfor -%}
+              </select>
             </div>
           {%- endfor -%}
         {%- endunless -%}
@@ -183,12 +168,12 @@
   </div>
 
   {%- comment -%} Size chart drawer {%- endcomment -%}
-  {%- if section.settings.show_size_chart and section.settings.size_chart_image != blank -%}
-    <div data-size-chart-drawer class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+  {%- if section.settings.show_size_chart -%}
+    <div id="size-chart-{{ section.id }}" data-size-chart-drawer role="dialog" aria-modal="true" aria-label="{{ section.settings.size_chart_title | escape }}" aria-hidden="true" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
       <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white border-l border-[#e5e5e5] p-8 transform translate-x-full transition-transform duration-300 size-chart-panel">
         <div class="flex justify-between items-center mb-8">
           <h3 class="text-lg font-display tracking-[0.08em] uppercase text-[#111]">{{ section.settings.size_chart_title | default: 'SIZE CHART RINGS' }}</h3>
-          <button data-size-chart-close class="text-[#6b6b6b] hover:text-[#111] transition-colors duration-200">
+          <button type="button" data-size-chart-close aria-label="Close size chart" class="text-[#6b6b6b] hover:text-[#111] transition-colors duration-200">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
               <line x1="4" y1="4" x2="16" y2="16"/>
               <line x1="4" y1="16" x2="16" y2="4"/>
@@ -196,6 +181,7 @@
           </button>
         </div>
         <div class="w-full">
+          {%- if section.settings.size_chart_image != blank -%}
           <img
             src="{{ section.settings.size_chart_image | image_url: width: 800 }}"
             alt="{{ section.settings.size_chart_title | default: 'Size Chart' }}"
@@ -203,6 +189,9 @@
             height="{{ section.settings.size_chart_image.height }}"
             class="w-full h-auto"
           >
+          {%- else -%}
+            <p class="text-sm text-[#6b6b6b]">Size chart not available yet. Add a size chart image in the product template settings.</p>
+          {%- endif -%}
         </div>
       </div>
     </div>

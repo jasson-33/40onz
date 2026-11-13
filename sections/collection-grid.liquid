@@ -1,0 +1,50 @@
+{%- comment -%}
+  Collection grid — bare card list for the 'collection.grid' alternate
+  template. Serves /collections/<handle>?view=grid&page=N as a paginated
+  card endpoint for the Collections page infinite scroll
+  (initCollectionsInfinite in theme.js). Keep 'per_page' equal to the
+  Collections section's 'products_per_page'.
+{%- endcomment -%}
+
+{%- liquid
+  assign per_page = section.settings.per_page | default: 12
+  assign hide_info = true
+  if section.settings.show_product_info
+    assign hide_info = false
+  endif
+-%}
+
+{%- paginate collection.products by per_page -%}
+  <ul data-collection-grid>
+    {%- for product in collection.products -%}
+      <li>{% render 'product-card', product: product, lazy: true, hide_info: hide_info %}</li>
+    {%- else -%}
+      <li class="col-span-full py-16 text-center text-sm tracking-[0.15em] uppercase text-mid">No products in this collection yet</li>
+    {%- endfor -%}
+  </ul>
+  {%- if paginate.next -%}<span data-grid-next hidden></span>{%- endif -%}
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Collection grid",
+  "settings": [
+    {
+      "type": "range",
+      "id": "per_page",
+      "min": 4,
+      "max": 48,
+      "step": 4,
+      "label": "Products per page",
+      "info": "Keep equal to 'Products per page' in the Collections section.",
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_info",
+      "label": "Show product title & price",
+      "default": false
+    }
+  ]
+}
+{% endschema %}

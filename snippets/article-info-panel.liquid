@@ -1,0 +1,30 @@
+{%- comment -%}
+  Info panel for the editorial article page — sits in the left column
+  under the first media item. Accepts: logo (image), credits (multi-line
+  string), article.
+{%- endcomment -%}
+
+<div class="w-full bg-white flex flex-col items-center justify-center text-center px-8 py-12 lg:px-12 lg:py-16 gap-8 lg:gap-10 grow">
+  {%- if logo != blank -%}
+    <img
+      src="{{ logo | image_url: width: 600 }}"
+      width="{{ logo.width }}"
+      height="{{ logo.height }}"
+      alt="{{ article.title | escape }}"
+      loading="lazy"
+      class="w-auto h-20 lg:h-28 object-contain"
+    >
+  {%- endif -%}
+
+  {%- if article.content != blank -%}
+    <div class="self-stretch text-left font-acumin text-sm leading-6 font-light text-ink">
+      {{ article.content }}
+    </div>
+  {%- endif -%}
+
+  {%- if credits != blank -%}
+    <div class="self-stretch text-left font-acumin text-xs leading-5 font-light text-mid">
+      {{ credits | newline_to_br }}
+    </div>
+  {%- endif -%}
+</div>

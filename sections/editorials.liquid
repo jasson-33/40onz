@@ -1,0 +1,105 @@
+{%- comment -%}
+  Editorials — uniform grid of lookbook items.
+  Renders articles from the selected blog (falls back to the
+  current blog on blog templates). Each article's first tag is
+  used as the season label ("SS26 · Collection").
+{%- endcomment -%}
+
+{%- assign source_blog = section.settings.blog | default: blog -%}
+{%- assign heading = blog.title | default: section.settings.heading -%}
+
+<section class="bg-white text-ink py-16 lg:py-24 px-6 lg:px-16">
+  <div class="max-w-[1600px] mx-auto">
+    {%- if heading != blank -%}
+      <h1 class="font-acumin text-2xl uppercase tracking-wider leading-8 font-light text-ash text-center mb-12 lg:mb-16">
+        {{ heading }}
+      </h1>
+    {%- endif -%}
+
+    <ul class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-x-4 gap-y-12">
+      {%- if source_blog != blank and source_blog.articles.size > 0 -%}
+        {%- for article in source_blog.articles -%}
+          {%- assign subtitle = article.metafields.custom.subtitle.value -%}
+          {%- assign season = article.tags.first -%}
+          <li class="group">
+            <a href="{{ article.url }}" class="block">
+              <div class="aspect-[4/5] overflow-hidden bg-[#f0f0f0]">
+                {%- if article.image != blank -%}
+                  <img
+                    src="{{ article.image | image_url: width: 800 }}"
+                    srcset="
+                      {{ article.image | image_url: width: 400 }} 400w,
+                      {{ article.image | image_url: width: 600 }} 600w,
+                      {{ article.image | image_url: width: 800 }} 800w
+                    "
+                    sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 20vw"
+                    width="{{ article.image.width }}"
+                    height="{{ article.image.height }}"
+                    alt="{{ article.image.alt | escape | default: article.title | escape }}"
+                    loading="lazy"
+                    class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  >
+                {%- else -%}
+                  {{ 'image' | placeholder_svg_tag: 'w-full h-full object-cover' }}
+                {%- endif -%}
+              </div>
+              <h2 class="mt-4 font-acumin text-2xl uppercase tracking-wider leading-7 font-light text-ink">
+                {{ article.title }}
+              </h2>
+              <p class="mt-1 font-acumin text-base leading-5 tracking-wider font-light text-mid">
+                {%- if subtitle != blank -%}
+                  {{ subtitle }}
+                {%- elsif season != blank -%}
+                  {{ season | upcase }} · {{ section.settings.collection_label }}
+                {%- else -%}
+                  {{ section.settings.collection_label }}
+                {%- endif -%}
+              </p>
+            </a>
+          </li>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in (1..5) -%}
+          <li>
+            <div class="aspect-[4/5] bg-[#f0f0f0]">
+              {{ 'image' | placeholder_svg_tag: 'w-full h-full object-cover' }}
+            </div>
+            <p class="mt-4 font-acumin text-2xl uppercase tracking-wider leading-7 font-light text-ink">Editorial title</p>
+            <p class="mt-1 font-acumin text-base leading-5 tracking-wider font-light text-mid">SS26 · {{ section.settings.collection_label }}</p>
+          </li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Editorials",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Editorials"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog",
+      "info": "Create an 'editorials' blog — each article is a grid item. Subtitle: article metafield 'custom.subtitle' (verbatim), else first tag + suffix (e.g. SS26 · Collection)."
+    },
+    {
+      "type": "text",
+      "id": "collection_label",
+      "label": "Subtitle suffix",
+      "default": "Collection"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Editorials"
+    }
+  ]
+}
+{% endschema %}
