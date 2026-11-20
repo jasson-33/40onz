@@ -9,10 +9,14 @@
   --font-acumin: "Acumin Variable Concept", "Inter", system-ui, sans-serif;
   --font-plex-mono: "IBM Plex Mono", ui-monospace, "Courier New", monospace;
 
+  /* Design-spec weight — Acumin's default instance (194.29), replaces TW's 200 */
+  --font-weight-extralight: 194.29;
+
   /* ── Colors ──────────────────────────────────────────────────────── */
   --color-black: #0a0a0a;
   --color-ink: #1d1d1b;
   --color-white: #fafafa;
+  --color-paper: #ffffff;
   --color-gold: #c9a96e;
   --color-gold-light: #e0c99a;
   --color-mid: #6b6b6b;
@@ -77,24 +81,6 @@ a {
   font-family: var(--font-body);
 }
 
-/* ── Header grid ─────────────────────────────────────────────────── */
-.header-grid {
-  padding-left: 1.5rem;   /* pl-6 */
-  padding-right: 1.5rem;  /* pr-6 */
-}
-@media (min-width: 1024px) {
-  .header-grid {
-    padding-left: 2.5rem;   /* lg:pl-10 */
-    padding-right: 2.5rem;  /* lg:pr-10 */
-  }
-}
-@media (min-width: 1280px) {
-  .header-grid {
-    padding-left: 4rem;   /* xl:pl-16 */
-    padding-right: 4rem;  /* xl:pr-16 */
-  }
-}
-
 /* Desktop nav hit area for stable mega-menu hover */
 .menu-nav-item {
   display: inline-flex;
@@ -147,10 +133,52 @@ a {
 }
 
 .mega-menu-panel {
-  top: calc(var(--header-h, 100px) - 8px);
+  top: 70px;
   padding: 3.5rem 2rem 2.5rem;
   pointer-events: none;
+  /* slower veil on close so the items' exit motion stays visible */
+  transition: opacity 420ms var(--ease-smooth);
 }
+
+.mega-menu-panel[aria-hidden="false"] {
+  transition-duration: 200ms;
+}
+
+/* Panel stays click-through; only the content box is hoverable, so the
+   overlapping nav row keeps receiving hover for switching menus */
+.mega-menu-panel[aria-hidden="false"] .mega-menu-body {
+  pointer-events: auto;
+}
+
+/* Menu items: open = rise + fade (top-first), close = sink + fade (reversed) */
+.mega-menu-panel li {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 220ms var(--ease-smooth),
+    transform 220ms var(--ease-smooth);
+}
+
+/* Close stagger — bottom item leaves first (max 6 items per column) */
+.mega-menu-panel li:nth-child(6) { transition-delay: 0ms; }
+.mega-menu-panel li:nth-child(5) { transition-delay: 30ms; }
+.mega-menu-panel li:nth-child(4) { transition-delay: 60ms; }
+.mega-menu-panel li:nth-child(3) { transition-delay: 90ms; }
+.mega-menu-panel li:nth-child(2) { transition-delay: 120ms; }
+.mega-menu-panel li:nth-child(1) { transition-delay: 150ms; }
+
+.mega-menu-panel[aria-hidden="false"] li {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Open stagger — top item enters first */
+.mega-menu-panel[aria-hidden="false"] li:nth-child(1) { transition-delay: 0ms; }
+.mega-menu-panel[aria-hidden="false"] li:nth-child(2) { transition-delay: 40ms; }
+.mega-menu-panel[aria-hidden="false"] li:nth-child(3) { transition-delay: 80ms; }
+.mega-menu-panel[aria-hidden="false"] li:nth-child(4) { transition-delay: 120ms; }
+.mega-menu-panel[aria-hidden="false"] li:nth-child(5) { transition-delay: 160ms; }
+.mega-menu-panel[aria-hidden="false"] li:nth-child(6) { transition-delay: 200ms; }
 
 /* ── Visually hidden (accessibility) ─────────────────────────────── */
 .sr-only {

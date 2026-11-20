@@ -105,7 +105,7 @@
 
         {%- when 'paragraph' -%}
           <div class="max-w-[1800px] mx-auto w-full px-6 lg:px-10" {{ block.shopify_attributes }}>
-            <div class="font-acumin [font-weight:194.29] text-ink text-xl leading-6 tracking-wider space-y-5">
+            <div class="font-acumin font-extralight text-ink text-xl leading-6 tracking-wider space-y-5">
               {{ block.settings.body }}
             </div>
           </div>
@@ -201,7 +201,7 @@
                   {{ 'image' | placeholder_svg_tag: 'absolute inset-0 w-full h-full object-cover' }}
                 {%- endif -%}
               </div>
-              <div class="lg:col-span-3 flex flex-col justify-between gap-10 font-acumin [font-weight:194.29] text-ink text-xl leading-6 tracking-wider">
+              <div class="lg:col-span-3 flex flex-col justify-between gap-10 font-acumin font-extralight text-ink text-xl leading-6 tracking-wider">
                 {%- if block.settings.body != blank -%}
                   <div class="space-y-5">
                     {{ block.settings.body }}

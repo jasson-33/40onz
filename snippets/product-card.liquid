@@ -19,8 +19,8 @@
   aria-label="{{ product.title | escape }}"
 >
   {%- comment -%} Image container {%- endcomment -%}
-  <div class="relative block overflow-hidden bg-white aspect-[3/4]">
-    <a href="{{ product.url }}" class="absolute inset-0 block" tabindex="-1" aria-hidden="true">
+  <div class="relative block overflow-hidden bg-white">
+    <a href="{{ product.url }}" class="block" tabindex="-1" aria-hidden="true">
       <span class="absolute top-4 right-4 z-10 text-white/70 text-base leading-none pointer-events-none">✶</span>
     {%- if featured_image -%}
       <img
@@ -36,7 +36,7 @@
         width="{{ featured_image.preview_image.width }}"
         height="{{ featured_image.preview_image.height }}"
         loading="{{ loading }}"
-        class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+        class="block w-full h-auto transition-opacity duration-300"
       >
     {%- endif -%}
 
@@ -54,7 +54,7 @@
         width="{{ hover_image.preview_image.width }}"
         height="{{ hover_image.preview_image.height }}"
         loading="lazy"
-        class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300"
+        class="absolute inset-0 w-full h-full object-contain bg-white opacity-0 transition-opacity duration-300"
       >
     {%- endif -%}
     </a>

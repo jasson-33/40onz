@@ -36,7 +36,6 @@ function initMegaMenu() {
   const closeAll = () => {
     document.querySelectorAll('[data-mega-menu]').forEach((menuEl) => {
       menuEl.setAttribute('aria-hidden', 'true')
-      menuEl.style.pointerEvents = 'none'
     })
     document.querySelectorAll('[data-mega-menu-trigger]').forEach((triggerEl) => {
       triggerEl.setAttribute('aria-expanded', 'false')
@@ -57,7 +56,6 @@ function initMegaMenu() {
       clearTimeout(closeTimer)
       closeAll()
       menu.setAttribute('aria-hidden', 'false')
-      menu.style.pointerEvents = 'auto'
       trigger.setAttribute('aria-expanded', 'true')
       if (overlay) {
         overlay.setAttribute('aria-hidden', 'false')
@@ -67,7 +65,6 @@ function initMegaMenu() {
     const close = () => {
       closeTimer = setTimeout(() => {
         menu.setAttribute('aria-hidden', 'true')
-        menu.style.pointerEvents = 'none'
         trigger.setAttribute('aria-expanded', 'false')
         const hasOpenMenu = Array.from(document.querySelectorAll('[data-mega-menu]')).some(
           (menuEl) => menuEl.getAttribute('aria-hidden') === 'false',
@@ -200,6 +197,173 @@ async function refreshCart() {
   }
 }
 
+// ── Search Drawer ─────────────────────────────────────────────────────
+function initSearchDrawer() {
+  const drawer = document.querySelector('[data-search-drawer]')
+  const overlay = document.querySelector('[data-search-overlay]')
+  const openBtns = document.querySelectorAll('[data-search-open]')
+  if (!drawer) return
+
+  const input = drawer.querySelector('[data-search-input]')
+  const list = drawer.querySelector('[data-search-results-list]')
+  const empty = drawer.querySelector('[data-search-empty]')
+  const viewAll = drawer.querySelector('[data-search-view-all]')
+
+  const openSearch = () => {
+    drawer.setAttribute('aria-hidden', 'false')
+    overlay?.setAttribute('aria-hidden', 'false')
+    document.body.style.overflow = 'hidden'
+    setTimeout(() => input?.focus(), 350)
+  }
+
+  const closeSearch = () => {
+    drawer.setAttribute('aria-hidden', 'true')
+    overlay?.setAttribute('aria-hidden', 'true')
+    document.body.style.overflow = ''
+  }
+
+  openBtns.forEach((btn) => btn.addEventListener('click', openSearch))
+  drawer.querySelector('[data-search-close]')?.addEventListener('click', closeSearch)
+  overlay?.addEventListener('click', closeSearch)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSearch()
+  })
+
+  const esc = (s) =>
+    String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+
+  const money = (value) =>
+    new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: window.Shopify?.currency?.active || 'USD',
+    }).format(Number(value) || 0)
+
+  const showState = (state) => {
+    list.hidden = state !== 'results'
+    empty.hidden = state !== 'empty'
+    viewAll.hidden = state !== 'results'
+  }
+
+  let debounceTimer
+  let controller
+  const runSearch = async () => {
+    const q = input.value.trim()
+    if (q.length < 2) {
+      showState('idle')
+      list.innerHTML = ''
+      return
+    }
+    controller?.abort()
+    controller = new AbortController()
+    try {
+      const res = await fetch(
+        `/search/suggest.json?q=${encodeURIComponent(q)}&resources[type]=product&resources[limit]=6`,
+        { signal: controller.signal },
+      )
+      if (!res.ok) throw new Error(`search failed: ${res.status}`)
+      const data = await res.json()
+      const products = data?.resources?.results?.products ?? []
+      if (!products.length) {
+        showState('empty')
+        list.innerHTML = ''
+        return
+      }
+      list.innerHTML = products
+        .map((p) => {
+          const imgUrl = typeof p.featured_image === 'string' ? p.featured_image : p.featured_image?.url
+          const img = imgUrl
+            ? `<img src="${imgUrl}&width=160" alt="" width="56" height="70" class="w-14 h-[70px] object-cover bg-[#eee]">`
+            : '<span class="w-14 h-[70px] bg-[#eee] shrink-0"></span>'
+          return `
+            <li>
+              <a href="${p.url}" class="flex items-center gap-4 group">
+                ${img}
+                <span class="flex flex-col gap-1 min-w-0">
+                  <span class="text-[11px] tracking-[0.12em] uppercase truncate group-hover:text-[#c9a96e] transition-colors duration-200">${esc(p.title)}</span>
+                  <span class="text-[10px] tracking-[0.08em] uppercase text-[#6b6b6b]">${money(p.price)}</span>
+                </span>
+              </a>
+            </li>`
+        })
+        .join('')
+      viewAll.href = `/search?q=${encodeURIComponent(q)}`
+      showState('results')
+    } catch (err) {
+      if (err.name !== 'AbortError') console.error('[search]', err)
+    }
+  }
+
+  input?.addEventListener('input', () => {
+    clearTimeout(debounceTimer)
+    debounceTimer = setTimeout(runSearch, 250)
+  })
+
+  input?.addEventListener('keydown', (e) => {
+    const q = input.value.trim()
+    if (e.key === 'Enter' && q) {
+      window.location.href = `/search?q=${encodeURIComponent(q)}`
+    }
+  })
+
+  drawer.querySelector('[data-search-reset]')?.addEventListener('click', () => {
+    input.value = ''
+    list.innerHTML = ''
+    showState('idle')
+    input.focus()
+  })
+}
+
+// ── YouTube ambient loop — seeks before the end so the related-videos ──
+//    end-screen never renders. Requires data-yt-ambient + enablejsapi=1.
+function initAmbientYoutube() {
+  const iframes = document.querySelectorAll('iframe[data-yt-ambient]')
+  if (!iframes.length) return
+
+  const END_GUARD_S = 0.5
+  const boot = () => {
+    iframes.forEach((iframe) => {
+      const reveal = () => iframe.classList.remove('opacity-0')
+      setTimeout(reveal, 6000) // fallback if the API state never arrives
+      new YT.Player(iframe, {
+        events: {
+          onStateChange: (e) => {
+            // reveal only once playing is underway — hides the startup chrome flash
+            if (e.data === YT.PlayerState.PLAYING) setTimeout(reveal, 1)
+          },
+          onReady: (e) => {
+            const player = e.target
+            setInterval(() => {
+              // Resume if anything pauses it — a paused player shows the
+              // control overlay we can't hide from outside the iframe
+              if (player.getPlayerState?.() === YT.PlayerState.PAUSED) {
+                player.playVideo()
+              }
+              const duration = player.getDuration?.()
+              const current = player.getCurrentTime?.()
+              if (duration > 0 && duration - current < END_GUARD_S) {
+                player.seekTo(0, true)
+              }
+            }, 250)
+          },
+        },
+      })
+    })
+  }
+
+  if (window.YT?.Player) {
+    boot()
+  } else {
+    const prev = window.onYouTubeIframeAPIReady
+    window.onYouTubeIframeAPIReady = () => {
+      prev?.()
+      boot()
+    }
+    const tag = document.createElement('script')
+    tag.src = 'https://www.youtube.com/iframe_api'
+    document.head.appendChild(tag)
+  }
+}
+
 // ── Product Card Image Swap ───────────────────────────────────────────
 function initImageSwap(root = document) {
   root.querySelectorAll('[data-product-card]').forEach((card) => {
@@ -229,14 +393,10 @@ function initHeaderScroll() {
 
   const logoDefault = header.querySelector('[data-logo-default]')
   const logoScrolled = header.querySelector('[data-logo-scrolled]')
-  const overlay = document.querySelector('[data-mega-menu-overlay]')
 
   const update = () => {
     const scrolled = window.scrollY > 50
     header.style.setProperty('--header-h', scrolled ? '100px' : '140px')
-    if (overlay) {
-      overlay.style.top = `calc(var(--header-h, 140px) - 8px)`
-    }
     if (logoDefault && logoScrolled) {
       logoDefault.classList.toggle('opacity-0', scrolled)
       logoScrolled.classList.toggle('opacity-0', !scrolled)
@@ -554,6 +714,18 @@ function initCollectionLoadMore() {
       delete next.dataset.loading
     }
   })
+
+  // Infinite scroll — the next-page link doubles as the sentinel; it is
+  // removed by the click handler when the last page is reached
+  const sentinel = collection.querySelector('[data-collection-next]')
+  if (sentinel) {
+    new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) sentinel.click()
+      },
+      { rootMargin: '600px' },
+    ).observe(sentinel)
+  }
 }
 
 // ── Product Page ──────────────────────────────────────────────────────
@@ -690,6 +862,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initMegaMenu()
   initMobileNav()
   initCartDrawer()
+  initSearchDrawer()
+  initAmbientYoutube()
   initImageSwap()
   initHeaderScroll()
   initScrollReveal()

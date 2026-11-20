@@ -7,17 +7,17 @@
   <div
     data-mega-menu-overlay
     aria-hidden="true"
-    class="fixed left-0 right-0 bottom-0 z-20 bg-black/45 backdrop-blur-sm opacity-0 aria-[hidden=false]:opacity-100 pointer-events-none transition-opacity duration-300"
-    style="top: calc(var(--header-h, 140px) - 8px);"
+    class="fixed left-0 right-0 bottom-0 z-20 bg-black/50 backdrop-blur-sm opacity-0 aria-[hidden=false]:opacity-100 pointer-events-none transition-opacity duration-300"
+    style="top: 0;"
   ></div>
 
   {%- comment -%} Gradient fade so header reads over hero image {%- endcomment -%}
   <div class="absolute inset-0 z-0 bg-gradient-to-b from-black/50 to-transparent backdrop-blur-sm pointer-events-none"></div>
 
-  <div class="relative z-30 h-full max-w-[1920px] mx-auto grid grid-cols-[1fr_auto_1fr] items-center h-full header-grid px-6 lg:px-10">
+  <div class="relative z-30 h-full max-w-[1920px] mx-auto grid grid-cols-[1fr_auto_1fr] items-center h-full header-grid px-6 lg:px-10 xl:px-13">
 
     {%- comment -%} Left column — nav links {%- endcomment -%}
-    <nav class="hidden lg:flex items-center gap-8 justify-start" aria-label="Main navigation">
+    <nav class="hidden lg:flex items-center gap-2 justify-start" aria-label="Main navigation">
       {%- for link in section.settings.menu.links -%}
         {%- if link.links.size > 0 -%}
           <div class="relative">
@@ -57,7 +57,7 @@
           width="{{ section.settings.logo_width | default: 200 }}"
           height="auto"
           loading="eager"
-          class="h-9 w-auto object-contain transition-opacity duration-300"
+          class="h-15 w-auto object-contain transition-opacity duration-300"
         >
       {%- endif -%}
       {%- if section.settings.logo_scrolled != blank -%}
@@ -96,8 +96,8 @@
       {%- endif -%}
 
       {%- comment -%} Search {%- endcomment -%}
-      <a
-        href="{{ routes.search_url }}"
+      <button
+        data-search-open
         aria-label="Search"
         class="hidden lg:flex text-white/70 hover:text-white transition-colors duration-200"
       >
@@ -105,7 +105,7 @@
           <circle cx="7.5" cy="7.5" r="5.5"/>
           <path d="M13 13l3 3"/>
         </svg>
-      </a>
+      </button>
 
       {%- comment -%} Cart {%- endcomment -%}
       <button
@@ -200,7 +200,7 @@
 
 {%- comment -%} Spacer only on non-hero pages (hero section is full-bleed under the fixed header) {%- endcomment -%}
 {%- unless template == 'index' -%}
-  <div style="height: var(--header-h, 140px);"></div>
+  <div style="height: var(--header-h, 140px); background: var(--color-white);"></div>
 {%- endunless -%}
 
 {% schema %}

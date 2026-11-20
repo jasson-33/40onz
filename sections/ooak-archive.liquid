@@ -58,7 +58,7 @@
               <p data-ooak-num class="font-plex-mono text-[11px] text-mid">
                 {{- forloop.index | prepend: '0' | slice: -2, 2 -}}.
               </p>
-              <div class="aspect-[3/4] overflow-hidden bg-white flex items-center justify-center">
+              <div class="aspect-[462/530] overflow-hidden bg-paper flex items-end justify-center">
                 {%- if product.featured_media -%}
                   <img
                     src="{{ product.featured_media | image_url: width: 600 }}"
@@ -76,7 +76,7 @@
                   >
                 {%- endif -%}
               </div>
-              <div class="font-plex-mono text-[10px] uppercase tracking-wider leading-[1.8] text-ink">
+              <div class="font-plex-mono text-lg uppercase tracking-wider leading-[1.8] text-ink">
                 <p class="{% if product.available %}text-ink{% else %}text-mid{% endif %}">
                   {%- if product.available -%}
                     {{- available_label -}}
@@ -84,8 +84,8 @@
                     {{- sold_label -}}
                   {%- endif -%}
                 </p>
-                <p>{{ product.title }}</p>
-                <p class="text-mid">{{ product.price | money }}</p>
+                <p class="text-2xl">{{ product.title }}</p>
+                <p class="text-mid text-xl">{{ product.price | money }}</p>
                 <p aria-hidden="true">—</p>
               </div>
             </a>

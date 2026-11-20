@@ -22,49 +22,23 @@
     </div>
 
     {%- comment -%} ── Collage ─────────────────────────────────────────── {%- endcomment -%}
-    <div class="relative md:flex md:items-start mt-10 lg:mt-14">
+    <div class="relative md:flex md:items-start md:gap-8 mt-10 lg:mt-14">
 
-      <div class="relative md:w-[71%] md:shrink-0">
-          {%- if section.settings.journal_image != blank -%}
-            <img
-              src="{{ section.settings.journal_image | image_url: width: 1400 }}"
-              srcset="
-                {{ section.settings.journal_image | image_url: width: 800 }} 800w,
-                {{ section.settings.journal_image | image_url: width: 1100 }} 1100w,
-                {{ section.settings.journal_image | image_url: width: 1400 }} 1400w
-              "
-              sizes="(min-width: 1024px) 55vw, 90vw"
-              width="{{ section.settings.journal_image.width }}"
-              height="{{ section.settings.journal_image.height }}"
-              alt="{{ section.settings.journal_image.alt | escape | default: 'One of a kind journal' }}"
-              loading="eager"
-              class="w-full h-auto"
-            >
-          {%- elsif section.settings.journal_asset != blank -%}
-            <img
-              src="{{ section.settings.journal_asset | asset_url }}"
-              width="548"
-              height="621"
-              alt="One of a kind journal"
-              loading="eager"
-              class="w-full h-auto"
-            >
-          {%- elsif section.settings.journal_image_url != blank -%}
-            <img
-              src="{{ section.settings.journal_image_url }}"
-              width="548"
-              height="621"
-              alt="One of a kind journal"
-              loading="eager"
-              class="w-full h-auto"
-            >
-          {%- else -%}
-            {{ 'image' | placeholder_svg_tag: 'w-full aspect-[548/621]' }}
-          {%- endif -%}
+      <div class="relative md:w-1/2 md:shrink-0">
+        {%- render 'ambient-media',
+          video: section.settings.journal_video,
+          video_url: section.settings.journal_video_url,
+          image: section.settings.journal_image,
+          asset: section.settings.journal_asset,
+          image_url: section.settings.journal_image_url,
+          alt: 'One of a kind journal',
+          natural: true,
+          sizes: '(min-width: 1024px) 55vw, 90vw'
+        -%}
       </div>
 
-      {%- comment -%} Right column — overlaps journal's right page {%- endcomment -%}
-      <div class="relative z-10 flex flex-col gap-3 lg:gap-4 mt-10 md:mt-0 md:pt-5 md:w-[43%] md:-ml-[14%]">
+      {%- comment -%} Right column — stacked media blocks {%- endcomment -%}
+      <div class="flex flex-col gap-3 lg:gap-4 mt-10 md:mt-0 md:pt-5 md:w-1/2">
         {%- for block in section.blocks -%}
           {%- case block.type -%}
 
@@ -170,6 +144,18 @@
     {
       "type": "header",
       "content": "Journal"
+    },
+    {
+      "type": "video",
+      "id": "journal_video",
+      "label": "Journal video",
+      "info": "Shopify-hosted video. Takes priority over video URL and image."
+    },
+    {
+      "type": "video_url",
+      "id": "journal_video_url",
+      "label": "Journal video URL",
+      "accept": ["youtube", "vimeo"]
     },
     {
       "type": "image_picker",

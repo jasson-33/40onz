@@ -1,0 +1,57 @@
+<section class="bg-white text-ink px-6 lg:px-16 py-16 lg:py-24 min-h-[60vh]">
+  <div class="max-w-[1920px] mx-auto">
+    <p class="text-[10px] tracking-[0.22em] uppercase text-mid text-center mb-4">Search</p>
+    <h1 class="font-acumin text-2xl uppercase tracking-wider font-light text-ash text-center mb-12">
+      {%- if search.performed -%}
+        {{ search.results_count }}
+        {{ search.results_count | pluralize: 'result', 'results' }} for &ldquo;{{ search.terms | escape }}&rdquo;
+      {%- else -%}
+        Search
+      {%- endif -%}
+    </h1>
+
+    {%- if search.performed -%}
+      {%- assign products_found = 0 -%}
+      {%- paginate search.results by 24 -%}
+        {%- if search.results.size > 0 -%}
+          <ul class="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
+            {%- for item in search.results -%}
+              {%- if item.object_type == 'product' -%}
+                <li>{% render 'product-card', product: item %}</li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+
+          {%- if paginate.pages > 1 -%}
+            <nav class="flex items-center justify-center gap-6 mt-16" aria-label="Search pagination">
+              {%- if paginate.previous -%}
+                <a href="{{ paginate.previous.url }}" class="text-[10px] tracking-[0.22em] uppercase text-mid hover:text-ink transition-colors duration-200">&larr; Previous</a>
+              {%- endif -%}
+              <span class="text-[10px] tracking-[0.22em] uppercase text-mid">Page {{ paginate.current_page }} of {{ paginate.pages }}</span>
+              {%- if paginate.next -%}
+                <a href="{{ paginate.next.url }}" class="text-[10px] tracking-[0.22em] uppercase text-mid hover:text-ink transition-colors duration-200">Next &rarr;</a>
+              {%- endif -%}
+            </nav>
+          {%- endif -%}
+        {%- else -%}
+          <div class="flex flex-col items-center gap-6 text-center py-10">
+            <p class="text-[10px] tracking-[0.2em] uppercase">Your search did not yield any result</p>
+            <a
+              href="{{ routes.all_products_collection_url }}"
+              class="border border-[#0a0a0a] px-8 py-3 text-[10px] tracking-[0.22em] uppercase hover:bg-[#0a0a0a] hover:text-[#fafafa] transition-colors duration-200"
+            >
+              Shop All
+            </a>
+          </div>
+        {%- endif -%}
+      {%- endpaginate -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Search",
+  "settings": []
+}
+{% endschema %}

@@ -9,8 +9,8 @@
  */
 {
   "sections": {
-    "manifesto": {
-      "type": "manifesto",
+    "manifiesto": {
+      "type": "manifiesto",
       "blocks": {
         "para-1": {
           "type": "paragraph",
@@ -76,7 +76,7 @@
       ],
       "settings": {
         "video_url": "https://www.youtube.com/watch?v=pZ8HAi-bcRE&t=1s",
-        "banner_height": 100,
+        "banner_height": 50,
         "overlay_opacity": 10,
         "bg_image": "shopify://shop_images/fondo.png",
         "bg_dim": 0,
@@ -89,6 +89,6 @@
     }
   },
   "order": [
-    "manifesto"
+    "manifiesto"
   ]
 }

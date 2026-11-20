@@ -24,16 +24,16 @@
   <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
 
     {%- comment -%} Media gallery (left column, scrollable) {%- endcomment -%}
-    <div class="md:col-span-7 flex flex-col gap-4">
+    <div class="md:col-span-7 flex flex-col gap-4 max-w-3xl">
       {%- for media in product.media -%}
-        <div class="aspect-[3/4] overflow-hidden bg-[#f5f5f5]">
+        <div class="bg-neutral-100">
           <img
             src="{{ media | image_url: width: 1200 }}"
             alt="{{ media.alt | escape | default: product.title | escape }}"
             width="{{ media.preview_image.width }}"
             height="{{ media.preview_image.height }}"
             loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-            class="w-full h-full object-cover"
+            class="w-full h-auto"
           >
         </div>
       {%- endfor -%}
@@ -41,40 +41,36 @@
 
     {%- comment -%} Product info (right column, sticky) {%- endcomment -%}
     <div class="md:col-span-5 flex flex-col gap-6 md:pt-4">
-      <div class="sticky top-[var(--header-h,140px)] max-h-[calc(100vh-var(--header-h,140px))] overflow-y-auto">
-        {%- if product.vendor -%}
-          <p class="text-xs tracking-widest uppercase text-[#6b6b6b] mb-2">{{ product.vendor }}</p>
-        {%- endif -%}
-        <h1 class="font-display text-3xl md:text-4xl font-light leading-tight mb-4 text-[#111]">{{ product.title }}</h1>
-        <p class="text-lg text-[#111] mb-6">
-          {%- if product.price_varies -%}<span>From </span>{%- endif -%}
+      <div class="sticky top-[var(--header-h,140px)] max-h-[calc(100vh-var(--header-h,140px))] overflow-y-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <h1 class="font-acumin text-2xl leading-7 font-light uppercase mb-4 text-ink">{{ product.title }}</h1>
+        <p class="text-lg leading-5 text-ink mb-6">
           <span data-product-price class="{% if current_variant.compare_at_price > current_variant.price %}text-red-600{% endif %}">
             {{ current_variant.price | money }}
           </span>
           {%- if current_variant.compare_at_price > current_variant.price -%}
-            <s class="text-[#6b6b6b] text-sm ml-2">{{ current_variant.compare_at_price | money }}</s>
+            <s class="text-mid text-sm ml-2">{{ current_variant.compare_at_price | money }}</s>
           {%- endif -%}
         </p>
 
         {%- if product.description != blank -%}
-          <div class="prose prose-sm text-[#6b6b6b] leading-relaxed mb-6">
+          <div class="text-sm leading-4 text-mid mb-6">
             {{ product.description }}
           </div>
         {%- endif -%}
 
         {%- comment -%} SKU {%- endcomment -%}
-        <p class="text-xs text-[#6b6b6b] tracking-widest uppercase mb-4">SKU: <span class="text-[#111]" id="product-sku">{{ current_variant.sku }}</span></p>
+        <p class="text-xs text-mid tracking-widest uppercase mb-4">SKU: <span class="text-ink" id="product-sku">{{ current_variant.sku }}</span></p>
 
         {%- comment -%} Size selector (vertical scrollable) {%- endcomment -%}
         {%- unless product.has_only_default_variant -%}
           {%- for option in product.options_with_values -%}
             <div class="mb-6">
               <div class="flex justify-between items-center mb-3">
-                <p class="text-xs tracking-widest uppercase text-[#6b6b6b]">
-                  {{ option.name }}: <span class="text-[#111]" id="option-{{ forloop.index }}-selected">{{ option.selected_value }}</span>
+                <p class="text-xs tracking-widest uppercase text-mid">
+                  {{ option.name }}: <span class="text-ink" id="option-{{ forloop.index }}-selected">{{ option.selected_value }}</span>
                 </p>
                 {%- if section.settings.show_size_chart and option.name == 'Size' -%}
-                  <button type="button" data-size-chart-open aria-controls="size-chart-{{ section.id }}" aria-expanded="false" class="text-xs text-[#c9a96e] hover:text-[#111] transition-colors duration-200 uppercase tracking-widest">
+                  <button type="button" data-size-chart-open aria-controls="size-chart-{{ section.id }}" aria-expanded="false" class="text-xs text-gold hover:text-ink transition-colors duration-200 uppercase tracking-widest">
                     Size Chart
                   </button>
                 {%- endif -%}
@@ -83,7 +79,7 @@
                 aria-label="{{ option.name | escape }}"
                 data-product-option
                 data-option-index="{{ forloop.index0 }}"
-                class="w-full border border-[#e5e5e5] bg-white px-4 py-3 text-sm text-[#111] focus:outline-none focus:border-[#c9a96e]"
+                class="w-full border border-neutral-200 bg-white px-4 py-3 text-sm text-ink focus:outline-none focus:border-gold"
               >
                 {%- for value in option.values -%}
                   <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
@@ -93,71 +89,69 @@
           {%- endfor -%}
         {%- endunless -%}
 
-        {%- comment -%} Quantity selector {%- endcomment -%}
-        <div class="mb-6">
-          <p class="text-xs tracking-widest uppercase text-[#6b6b6b] mb-3">Quantity</p>
-          <div class="flex items-center border border-[#e5e5e5] w-fit">
-            <button data-quantity-minus class="px-4 py-2 text-[#6b6b6b] hover:text-[#111] transition-colors duration-200">−</button>
-            <input type="number" name="quantity" value="1" min="1" class="w-12 text-center text-sm text-[#111] border-x border-[#e5e5e5] focus:outline-none" readonly>
-            <button data-quantity-plus class="px-4 py-2 text-[#6b6b6b] hover:text-[#111] transition-colors duration-200">+</button>
+        {%- comment -%} Quantity + Add to cart (same row) {%- endcomment -%}
+        <div class="mb-6 flex items-stretch gap-4">
+          <div class="flex items-center border border-neutral-200">
+            <button data-quantity-minus class="px-4 py-2 text-mid hover:text-ink transition-colors duration-200">−</button>
+            <input type="number" name="quantity" value="1" min="1" class="w-12 text-center text-sm text-ink border-x border-neutral-200 focus:outline-none" readonly>
+            <button data-quantity-plus class="px-4 py-2 text-mid hover:text-ink transition-colors duration-200">+</button>
           </div>
-        </div>
 
-        {%- comment -%} Add to cart {%- endcomment -%}
-        <form action="{{ routes.cart_add_url }}" method="post" data-add-to-cart class="mb-6">
-          <input type="hidden" name="id" value="{{ current_variant.id }}">
-          <button
-            type="submit"
-            {% unless current_variant.available %}disabled{% endunless %}
-            class="w-full py-4 bg-[#111] text-white text-xs tracking-widest uppercase font-medium hover:bg-[#333] transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
+          <form action="{{ routes.cart_add_url }}" method="post" data-add-to-cart class="flex-1">
+            <input type="hidden" name="id" value="{{ current_variant.id }}">
+            <button
+              type="submit"
+              {% unless current_variant.available %}disabled{% endunless %}
+              class="w-full h-full py-4 bg-ink text-white text-xs tracking-widest uppercase font-medium hover:bg-neutral-800 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
             {%- if current_variant.available -%}
               {%- if product.has_only_default_variant -%}Add to Cart{%- else -%}Choose Options{%- endif -%}
             {%- else -%}
               Sold Out
             {%- endif -%}
-          </button>
-        </form>
+            </button>
+          </form>
+        </div>
 
         {%- comment -%} Accordions {%- endcomment -%}
-        <div class="border-t border-[#e5e5e5]">
+        <div class="border-t border-neutral-200">
           {%- if section.settings.size_and_fit_content != blank -%}
-            <div class="border-b border-[#e5e5e5]">
-              <button data-accordion-toggle class="w-full flex justify-between items-center py-4 text-xs tracking-widest uppercase text-[#111] hover:text-[#6b6b6b] transition-colors duration-200">
+            <div class="border-b border-neutral-200">
+              <button data-accordion-toggle class="w-full flex justify-between items-center py-4 text-xs tracking-widest uppercase text-ink hover:text-mid transition-colors duration-200">
                 Size and Fit
                 <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/>
                 </svg>
               </button>
-              <div data-accordion-content class="hidden pb-4 text-sm text-[#6b6b6b] leading-relaxed">
+              <div data-accordion-content class="hidden pb-4 text-sm text-mid leading-relaxed">
                 {{ section.settings.size_and_fit_content }}
               </div>
             </div>
           {%- endif -%}
 
           {%- if section.settings.material_and_care_content != blank -%}
-            <div class="border-b border-[#e5e5e5]">
-              <button data-accordion-toggle class="w-full flex justify-between items-center py-4 text-xs tracking-widest uppercase text-[#111] hover:text-[#6b6b6b] transition-colors duration-200">
+            <div class="border-b border-neutral-200">
+              <button data-accordion-toggle class="w-full flex justify-between items-center py-4 text-xs tracking-widest uppercase text-ink hover:text-mid transition-colors duration-200">
                 Material and Care
                 <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/>
                 </svg>
               </button>
-              <div data-accordion-content class="hidden pb-4 text-sm text-[#6b6b6b] leading-relaxed">
+              <div data-accordion-content class="hidden pb-4 text-sm text-mid leading-relaxed">
                 {{ section.settings.material_and_care_content }}
               </div>
             </div>
           {%- endif -%}
 
           {%- if section.settings.shipping_and_returns_content != blank -%}
-            <div class="border-b border-[#e5e5e5]">
-              <button data-accordion-toggle class="w-full flex justify-between items-center py-4 text-xs tracking-widest uppercase text-[#111] hover:text-[#6b6b6b] transition-colors duration-200">
+            <div class="border-b border-neutral-200">
+              <button data-accordion-toggle class="w-full flex justify-between items-center py-4 text-xs tracking-widest uppercase text-ink hover:text-mid transition-colors duration-200">
                 Shipping and Returns
                 <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/>
                 </svg>
               </button>
-              <div data-accordion-content class="hidden pb-4 text-sm text-[#6b6b6b] leading-relaxed">
+              <div data-accordion-content class="hidden pb-4 text-sm text-mid leading-relaxed">
                 {{ section.settings.shipping_and_returns_content }}
               </div>
             </div>
@@ -170,10 +164,10 @@
   {%- comment -%} Size chart drawer {%- endcomment -%}
   {%- if section.settings.show_size_chart -%}
     <div id="size-chart-{{ section.id }}" data-size-chart-drawer role="dialog" aria-modal="true" aria-label="{{ section.settings.size_chart_title | escape }}" aria-hidden="true" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
-      <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white border-l border-[#e5e5e5] p-8 transform translate-x-full transition-transform duration-300 size-chart-panel">
+      <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white border-l border-neutral-200 p-8 transform translate-x-full transition-transform duration-300 size-chart-panel">
         <div class="flex justify-between items-center mb-8">
-          <h3 class="text-lg font-display tracking-[0.08em] uppercase text-[#111]">{{ section.settings.size_chart_title | default: 'SIZE CHART RINGS' }}</h3>
-          <button type="button" data-size-chart-close aria-label="Close size chart" class="text-[#6b6b6b] hover:text-[#111] transition-colors duration-200">
+          <h3 class="text-lg font-display tracking-[0.08em] uppercase text-ink">{{ section.settings.size_chart_title | default: 'SIZE CHART RINGS' }}</h3>
+          <button type="button" data-size-chart-close aria-label="Close size chart" class="text-mid hover:text-ink transition-colors duration-200">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
               <line x1="4" y1="4" x2="16" y2="16"/>
               <line x1="4" y1="16" x2="16" y2="4"/>
@@ -190,7 +184,7 @@
             class="w-full h-auto"
           >
           {%- else -%}
-            <p class="text-sm text-[#6b6b6b]">Size chart not available yet. Add a size chart image in the product template settings.</p>
+            <p class="text-sm text-mid">Size chart not available yet. Add a size chart image in the product template settings.</p>
           {%- endif -%}
         </div>
       </div>

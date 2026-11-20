@@ -86,12 +86,18 @@
 
   {%- section 'footer' -%}
 
-  {%- comment -%} Cart drawer (rendered globally) {%- endcomment -%}
+  {%- comment -%} Cart & search drawers (rendered globally) {%- endcomment -%}
   {% render 'cart-drawer' %}
+  {% render 'search-drawer' %}
 
-  {%- comment -%} Cart overlay {%- endcomment -%}
+  {%- comment -%} Cart & search overlays {%- endcomment -%}
   <div
     data-cart-overlay
+    aria-hidden="true"
+    class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 aria-hidden:opacity-0 aria-hidden:pointer-events-none"
+  ></div>
+  <div
+    data-search-overlay
     aria-hidden="true"
     class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 aria-hidden:opacity-0 aria-hidden:pointer-events-none"
   ></div>

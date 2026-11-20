@@ -1,0 +1,66 @@
+{%- comment -%} Slide-in search drawer with live product results {%- endcomment -%}
+
+<div
+  data-search-drawer
+  aria-hidden="true"
+  aria-label="Search"
+  role="dialog"
+  class="
+    fixed top-0 right-0 z-50 h-full w-full sm:w-1/3 sm:min-w-96
+    bg-[#fafafa] text-[#0a0a0a] border-l border-[#e5e5e5]
+    translate-x-full aria-[hidden=false]:translate-x-0
+    transition-transform duration-350 ease-[cubic-bezier(0.4,0,0.2,1)]
+    flex flex-col
+  "
+>
+  {%- comment -%} Input row {%- endcomment -%}
+  <div class="flex items-center gap-3 px-6 py-5 border-b border-[#e5e5e5]">
+    <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" class="shrink-0 text-[#6b6b6b]">
+      <circle cx="7.5" cy="7.5" r="5.5"/>
+      <path d="M13 13l3 3"/>
+    </svg>
+    <input
+      data-search-input
+      type="search"
+      placeholder="Search"
+      autocomplete="off"
+      aria-label="Search products"
+      class="flex-1 min-w-0 bg-transparent text-[11px] tracking-[0.18em] uppercase placeholder:text-[#a8a8a8] focus:outline-none"
+    >
+    <button
+      data-search-close
+      aria-label="Close search"
+      class="w-8 h-8 shrink-0 flex items-center justify-center text-[#6b6b6b] hover:text-[#0a0a0a] transition-colors duration-200"
+    >
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M4 4l12 12M16 4L4 16"/>
+      </svg>
+    </button>
+  </div>
+
+  {%- comment -%} Body {%- endcomment -%}
+  <div class="flex-1 overflow-y-auto px-6 py-16 flex flex-col items-center gap-8">
+    <p class="text-[10px] tracking-[0.22em] uppercase text-[#6b6b6b]">Search</p>
+
+    <ul data-search-results-list hidden class="w-full flex-col gap-5"></ul>
+
+    <div data-search-empty hidden class="flex-col items-center gap-6 text-center">
+      <p class="text-[10px] tracking-[0.2em] uppercase">Your search did not yield any result</p>
+      <button
+        data-search-reset
+        class="border border-[#0a0a0a] px-8 py-3 text-[10px] tracking-[0.22em] uppercase hover:bg-[#0a0a0a] hover:text-[#fafafa] transition-colors duration-200"
+      >
+        Reset Search
+      </button>
+    </div>
+
+    <a
+      data-search-view-all
+      href="{{ routes.search_url }}"
+      hidden
+      class="border-b border-[#0a0a0a] pb-1 text-[10px] tracking-[0.22em] uppercase hover:text-[#6b6b6b] hover:border-[#6b6b6b] transition-colors duration-200"
+    >
+      View all results
+    </a>
+  </div>
+</div>

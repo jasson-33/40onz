@@ -18,21 +18,19 @@
   aria-hidden="true"
   class="
     mega-menu-panel fixed left-0 right-0 z-50
-    border-t border-white/10
     opacity-0 aria-[hidden=false]:opacity-100
     pointer-events-none
-    transition-opacity duration-200
   "
-  style="top: calc(var(--header-h, 140px) - 8px);"
+  style="top: 70px;"
 >
-  <div class="max-w-[1920px] mx-auto px-6 lg:px-10 py-8">
-    <div class="grid grid-cols-{{ columns_count }} gap-12">
+  <div class="max-w-[1920px] mx-auto px-6 lg:px-10">
+    <div class="mega-menu-body flex gap-22 w-fit">
       {%- for column_index in (1..columns_count) -%}
         <ul class="flex flex-col gap-3">
           {%- assign start_index = column_index | minus: 1 | times: max_per_column -%}
           {%- for link in menu limit: max_per_column offset: start_index -%}
             <li>
-              <a href="{{ link.url }}" class="text-sm text-white/95 hover:text-[#c9a96e] transition-colors duration-200">
+              <a href="{{ link.url }}" class="text-sm text-white/85 hover:text-[#c9a96e] transition-colors duration-200">
                 {{ link.title }}
               </a>
             </li>

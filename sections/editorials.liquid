@@ -23,7 +23,7 @@
           {%- assign season = article.tags.first -%}
           <li class="group">
             <a href="{{ article.url }}" class="block">
-              <div class="aspect-[4/5] overflow-hidden bg-[#f0f0f0]">
+              <div class="aspect-[358/530] overflow-hidden bg-neutral-100">
                 {%- if article.image != blank -%}
                   <img
                     src="{{ article.image | image_url: width: 800 }}"
@@ -43,7 +43,7 @@
                   {{ 'image' | placeholder_svg_tag: 'w-full h-full object-cover' }}
                 {%- endif -%}
               </div>
-              <h2 class="mt-4 font-acumin text-2xl uppercase tracking-wider leading-7 font-light text-ink">
+              <h2 class="mt-4 font-acumin text-lg uppercase tracking-wider leading-7 font-light text-ink">
                 {{ article.title }}
               </h2>
               <p class="mt-1 font-acumin text-base leading-5 tracking-wider font-light text-mid">
@@ -61,10 +61,10 @@
       {%- else -%}
         {%- for i in (1..5) -%}
           <li>
-            <div class="aspect-[4/5] bg-[#f0f0f0]">
+            <div class="aspect-[358/530] bg-neutral-100">
               {{ 'image' | placeholder_svg_tag: 'w-full h-full object-cover' }}
             </div>
-            <p class="mt-4 font-acumin text-2xl uppercase tracking-wider leading-7 font-light text-ink">Editorial title</p>
+            <p class="mt-4 font-acumin text-lg uppercase tracking-wider leading-7 font-light text-ink">Editorial title</p>
             <p class="mt-1 font-acumin text-base leading-5 tracking-wider font-light text-mid">SS26 · {{ section.settings.collection_label }}</p>
           </li>
         {%- endfor -%}
